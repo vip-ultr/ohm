@@ -1,17 +1,21 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@/hooks/useWallet";
 import WalletInfo from "@/components/profile/WalletInfo";
 import BalanceCards from "@/components/profile/BalanceCards";
 import HoldingsTab from "@/components/profile/HoldingsTab";
 import HistoryTab from "@/components/profile/HistoryTab";
-import ExportKeySection from "@/components/profile/ExportKeySection";
 import type { ProfileTab, WalletPortfolio } from "@/types";
 import { History, Layers } from "lucide-react";
+
+// useExportWallet accesses browser APIs — must never run on the server
+const ExportKeySection = dynamic(
+  () => import("@/components/profile/ExportKeySection"),
+  { ssr: false }
+);
 
 const TABS: { id: ProfileTab; label: string; icon: React.ReactNode }[] = [
   { id: "holdings", label: "Holdings", icon: <Layers size={13} /> },
