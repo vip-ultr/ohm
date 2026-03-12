@@ -162,125 +162,140 @@ body {
 /* ═══════════════════════════════════════════════════════════════════
    FOOTER
 ═══════════════════════════════════════════════════════════════════ */
+/* ── Footer ─────────────────────────────────────────────────────── */
 .footer {
   border-top: 1px solid var(--border);
-  padding: 32px 24px;
   background: var(--bg2);
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
 }
 
-.footer-inner {
+.footer-bar {
+  width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 32px;
+  display: flex;
   align-items: center;
+  gap: 14px;
+  white-space: nowrap;
 }
 
+/* Brand */
 .footer-brand {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.footer-logo {
-  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
+  flex-shrink: 0;
 }
 
 .footer-logo-icon {
-  width: 28px;
-  height: 28px;
-  background: var(--green);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: #000;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--green);
+  line-height: 1;
 }
 
 .footer-logo-text {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text);
+  letter-spacing: 0.02em;
 }
 
-.footer-slogan {
-  font-size: 12px;
-  color: var(--text3);
-  font-style: italic;
-}
-
-.footer-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.footer-ca-label {
+.footer-tagline {
   font-size: 11px;
   color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
+/* Contract address */
 .footer-ca {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: var(--bg3);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 12px;
+  border-radius: 6px;
+  padding: 3px 10px;
+  flex-shrink: 0;
 }
 
 .footer-ca-addr {
   font-family: "Share Tech Mono", monospace;
+  font-size: 11px;
+  color: var(--text2);
+  letter-spacing: 0.04em;
+}
+
+/* Divider */
+.footer-divider {
+  color: var(--border);
+  font-size: 14px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* Social icons */
+.footer-socials {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.footer-icon-link {
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.footer-icon-link:hover {
+  color: var(--text);
+}
+
+/* Text links */
+.footer-text-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 12px;
+  color: var(--text3);
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.footer-text-link:hover {
+  color: var(--text);
+}
+
+/* Powered by */
+.footer-powered {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.footer-powered-label {
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.footer-sol-icon {
+  color: #9945FF;
+}
+
+.footer-sol-text {
+  font-size: 12px;
+  font-weight: 600;
   color: var(--text2);
 }
 
-.footer-socials {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.footer-social-link {
-  color: var(--text3);
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.footer-social-link:hover {
-  color: var(--green);
-  transform: translateY(-2px);
-}
-
-.footer-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-.powered-by {
-  font-size: 11px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.powered-sol {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--green);
-}
-
-.powered-sol span {
+/* keep this placeholder so the block isn't empty */
+.__footer-old-powered-sol span {
   font-size: 12px;
   letter-spacing: 2px;
 }
@@ -1065,16 +1080,8 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .footer-inner {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .footer-right {
-    grid-column: 1 / -1;
-    align-items: flex-start;
-    flex-direction: row;
-    gap: 8px;
-    align-items: center;
+  .footer-bar {
+    gap: 10px;
   }
 }
 
@@ -1101,17 +1108,14 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .footer-inner {
-    grid-template-columns: 1fr;
-    text-align: center;
+  .footer-tagline,
+  .footer-text-link span,
+  .footer-powered-label {
+    display: none;
   }
 
-  .footer-center {
-    align-items: center;
-  }
-
-  .footer-right {
-    align-items: center;
+  .footer-bar {
+    gap: 8px;
   }
 
   .token-header {

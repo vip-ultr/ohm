@@ -1,72 +1,76 @@
 "use client";
 
 import Link from "next/link";
-import { Twitter, Github, MessageCircle } from "lucide-react";
+import { FaGithub, FaXTwitter, FaDiscord } from "react-icons/fa6";
+import { SiSolana } from "react-icons/si";
+import { AlertCircle, Code2 } from "lucide-react";
 import { CopyButton } from "@/components/ui/CopyButton";
 
-// Replace with actual Ohm contract address when deployed
 const CONTRACT_ADDRESS = "OHMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-const SHORT_CA = `${CONTRACT_ADDRESS.slice(0, 8)}…${CONTRACT_ADDRESS.slice(-6)}`;
+const SHORT_CA = `${CONTRACT_ADDRESS.slice(0, 4)}...${CONTRACT_ADDRESS.slice(-4)}`;
+
+function Divider() {
+  return <span className="footer-divider">|</span>;
+}
 
 export default function Footer() {
   return (
     <footer className="footer">
-      <div className="footer-inner">
-        {/* Left: Brand */}
+      <div className="footer-bar">
+
+        {/* Brand */}
         <div className="footer-brand">
-          <div className="footer-logo">
-            <div className="footer-logo-icon">Ω</div>
-            <span className="footer-logo-text">Ohm</span>
-          </div>
-          <div className="footer-slogan">Detect. Analyze. Act.</div>
+          <span className="footer-logo-icon">Ω</span>
+          <span className="footer-logo-text">Ohm</span>
+          <Divider />
+          <span className="footer-tagline">intelligence layer</span>
         </div>
 
-        {/* Center: Contract + Socials */}
-        <div className="footer-center">
-          <div className="footer-ca-label">Contract Address</div>
-          <div className="footer-ca">
-            <span className="footer-ca-addr">{SHORT_CA}</span>
-            <CopyButton text={CONTRACT_ADDRESS} size={13} />
-          </div>
-
-          <div className="footer-socials">
-            <Link
-              href="https://twitter.com/ohm_markets"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-social-link"
-              aria-label="Twitter / X"
-            >
-              <Twitter size={18} />
-            </Link>
-            <Link
-              href="https://github.com/vip-ultr/ohm"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-social-link"
-              aria-label="GitHub"
-            >
-              <Github size={18} />
-            </Link>
-            <Link
-              href="https://discord.gg/ohm"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-social-link"
-              aria-label="Discord"
-            >
-              <MessageCircle size={18} />
-            </Link>
-          </div>
+        {/* Contract address */}
+        <div className="footer-ca">
+          <span className="footer-ca-addr">{SHORT_CA}</span>
+          <CopyButton text={CONTRACT_ADDRESS} size={12} />
         </div>
 
-        {/* Right: Powered by Solana */}
-        <div className="footer-right">
-          <div className="powered-by">Powered by</div>
-          <div className="powered-sol">
-            ◎ SOL<span>ANA</span>
-          </div>
+        <Divider />
+
+        {/* Social icons */}
+        <div className="footer-socials">
+          <Link href="https://github.com/vip-ultr/ohm" target="_blank" rel="noopener noreferrer" className="footer-icon-link" aria-label="GitHub">
+            <FaGithub size={16} />
+          </Link>
+          <Link href="https://twitter.com/ohm_markets" target="_blank" rel="noopener noreferrer" className="footer-icon-link" aria-label="X / Twitter">
+            <FaXTwitter size={15} />
+          </Link>
+          <Link href="https://discord.gg/ohm" target="_blank" rel="noopener noreferrer" className="footer-icon-link" aria-label="Discord">
+            <FaDiscord size={16} />
+          </Link>
         </div>
+
+        <Divider />
+
+        {/* Utility links */}
+        <Link href="/docs" className="footer-text-link">
+          <Code2 size={13} />
+          developers
+        </Link>
+
+        <Divider />
+
+        <Link href="https://github.com/vip-ultr/ohm/issues/new" target="_blank" rel="noopener noreferrer" className="footer-text-link">
+          <AlertCircle size={13} />
+          report bug
+        </Link>
+
+        <Divider />
+
+        {/* Powered by Solana */}
+        <div className="footer-powered">
+          <span className="footer-powered-label">powered by</span>
+          <SiSolana size={14} className="footer-sol-icon" />
+          <span className="footer-sol-text">solana</span>
+        </div>
+
       </div>
     </footer>
   );
