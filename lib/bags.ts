@@ -71,31 +71,38 @@ interface BagsPriceResponse {
 }
 
 // ─── DexScreener types ────────────────────────────────────────────
+// GET /tokens/v1/{chainId}/{tokenAddresses} → flat DexPair[]  (up to 30 addresses, comma-separated)
+// GET /token-pairs/v1/{chainId}/{tokenAddress} → flat DexPair[] for one token
+// Rate limit: 60 req/min (free tier)
 interface DexPair {
   chainId: string;
   dexId: string;
+  url: string;
   pairAddress: string;
+  labels?: string[];
   baseToken: { address: string; name: string; symbol: string };
   quoteToken: { address: string; name: string; symbol: string };
   priceNative: string;
   priceUsd?: string;
-  txns?: { h24?: { buys: number; sells: number } };
-  volume?: { h24?: number; h6?: number; h1?: number };
-  priceChange?: { h1?: number; h6?: number; h24?: number };
-  liquidity?: { usd?: number };
+  txns?: {
+    m5?: { buys: number; sells: number };
+    h1?: { buys: number; sells: number };
+    h6?: { buys: number; sells: number };
+    h24?: { buys: number; sells: number };
+  };
+  volume?: { h24?: number; h6?: number; h1?: number; m5?: number };
+  priceChange?: { m5?: number; h1?: number; h6?: number; h24?: number };
+  liquidity?: { usd?: number; base?: number; quote?: number };
   fdv?: number;
   marketCap?: number;
   pairCreatedAt?: number;
   info?: {
     imageUrl?: string;
-    websites?: { url: string }[];
+    header?: string;
+    openGraph?: string;
+    websites?: { url: string; label?: string }[];
     socials?: { type: string; url: string }[];
   };
-}
-
-interface DexScreenerTokenResponse {
-  schemaVersion: string;
-  pairs: DexPair[] | null;
 }
 
 // ─── Helius DAS asset type (minimal) ─────────────────────────────
@@ -181,11 +188,13 @@ export async function fetchBagsPrice(tokenMint: string): Promise<number> {
 }
 
 // ─── Fetch DexScreener data for multiple mints (max 30 per call) ──
+// Endpoint: GET https://api.dexscreener.com/tokens/v1/solana/{addr1,addr2,...}
+// Response: flat DexPair[] — all pairs for all requested tokens combined
 async function fetchDexScreenerBatch(mints: string[]): Promise<Map<string, DexPair>> {
   const map = new Map<string, DexPair>();
   if (!mints.length) return map;
 
-  // DexScreener accepts up to 30 addresses per call
+  // DexScreener accepts up to 30 comma-separated addresses per call
   const chunks: string[][] = [];
   for (let i = 0; i < mints.length; i += 30) {
     chunks.push(mints.slice(i, i + 30));
@@ -199,15 +208,15 @@ async function fetchDexScreenerBatch(mints: string[]): Promise<Map<string, DexPa
           { headers: { Accept: "application/json" }, next: { revalidate: 30 } }
         );
         if (!res.ok) return;
-        const data = (await res.json()) as DexScreenerTokenResponse[];
-        // DexScreener returns an array when querying multiple tokens
-        const pairs = Array.isArray(data)
-          ? data.flatMap((d) => d.pairs ?? [])
-          : (data as unknown as DexScreenerTokenResponse).pairs ?? [];
+
+        // Response is a flat DexPair[] (not { pairs: [...] })
+        const pairs = (await res.json()) as DexPair[];
+        if (!Array.isArray(pairs)) return;
 
         for (const pair of pairs) {
-          const addr = pair.baseToken.address;
-          // Keep the pair with highest liquidity for each token
+          const addr = pair.baseToken?.address;
+          if (!addr) continue;
+          // Keep the pair with the highest liquidity (most relevant market)
           const existing = map.get(addr);
           const liq = pair.liquidity?.usd ?? 0;
           const existingLiq = existing?.liquidity?.usd ?? 0;
