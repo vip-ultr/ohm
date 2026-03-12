@@ -218,6 +218,128 @@ body {
   color: var(--green);
 }
 
+/* ── Settings dropdown ───────────────────────────────────────────── */
+.settings-wrap {
+  position: relative;
+}
+
+.settings-trigger {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--text3);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.settings-trigger:hover,
+.settings-trigger.active {
+  color: var(--text);
+  background: var(--bg3);
+  border-color: var(--border2);
+}
+
+.settings-trigger.active {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.settings-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 200px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  z-index: 200;
+  animation: settings-in 0.12s ease;
+}
+
+@keyframes settings-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.settings-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text4);
+  padding: 6px 10px 4px;
+}
+
+.settings-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s, color 0.1s;
+}
+
+.settings-item:hover {
+  background: var(--bg3);
+  color: var(--text);
+}
+
+.settings-item.selected {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.settings-check {
+  margin-left: auto;
+  color: var(--green);
+  flex-shrink: 0;
+}
+
+/* Address row */
+.settings-addr {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+}
+
+.settings-addr-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Danger row (disconnect) */
+.settings-item-danger {
+  color: var(--text3);
+}
+
+.settings-item-danger:hover {
+  background: rgba(224, 92, 92, 0.1);
+  color: var(--red);
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    FOOTER
 ═══════════════════════════════════════════════════════════════════ */

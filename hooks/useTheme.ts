@@ -8,5 +8,5 @@ export function useAppTheme() {
 
   const toggle = () => setTheme(isDark ? "light" : "dark");
 
-  return { isDark, toggle, theme: resolvedTheme };
+  return { isDark, toggle, setTheme, theme: resolvedTheme };
 }

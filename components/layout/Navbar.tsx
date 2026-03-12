@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useWallet } from "@/hooks/useWallet";
 import { SearchBar } from "@/components/ui/SearchBar";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { SettingsDropdown } from "@/components/ui/SettingsDropdown";
 import { User } from "lucide-react";
 
 export default function Navbar() {
@@ -44,10 +44,7 @@ export default function Navbar() {
 
       {/* Right controls */}
       <div className="nav-right">
-        <ThemeToggle />
-
-        <span className="nav-divider">/</span>
-
+        {/* Connect / wallet pill */}
         {!ready ? (
           <button className="connect-btn" disabled style={{ opacity: 0.4 }}>
             Connect
@@ -62,6 +59,11 @@ export default function Navbar() {
             Connect
           </button>
         )}
+
+        <span className="nav-divider">/</span>
+
+        {/* Settings gear — theme + account actions */}
+        <SettingsDropdown />
       </div>
     </nav>
   );
