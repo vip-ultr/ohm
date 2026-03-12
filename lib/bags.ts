@@ -1,85 +1,61 @@
 /**
- * lib/bags.ts — Bags.fm data layer
+ * lib/bags.ts — Token data layer
  *
- * Architecture:
- *  1. Bags API  (public-api-v2.bags.fm/api/v1)  → token mint list + creator info
- *  2. DexScreener API (free, no auth)            → price / volume / liquidity / 24h change
- *  3. Helius DAS                                 → name / symbol / logo / supply / decimals
+ * Architecture (Helius-first):
+ *  1. Helius DAS `searchAssets`  → token discovery (recently launched fungible tokens)
+ *  2. Helius DAS `getAssetBatch` → name / symbol / logo / supply / decimals / price (Jupiter)
+ *  3. DexScreener (free, no auth) → volume / liquidity / price-change % / pair age
  *
  * Env vars required (server-only):
- *   BAGSFM_API_KEY      — from https://dev.bags.fm
- *   BAGSFM_BASE_URL     — https://public-api-v2.bags.fm/api/v1
- *   BAGSFM_PRICE_URL    — https://api2.bags.fm/api/v1
- *   DEXSCREENER_BASE_URL — https://api.dexscreener.com
- *   HELIUS_RPC_URL / HELIUS_API_KEY  (used via lib/helius.ts)
+ *   HELIUS_API_KEY       — from https://dev.helius.xyz
+ *   HELIUS_RPC_URL       — https://mainnet.helius-rpc.com  (default)
+ *   DEXSCREENER_BASE_URL — https://api.dexscreener.com    (default)
  */
 
 import type { Token, OverviewStats, Timeframe } from "@/types";
 import { fmtAmount, fmtPrice, timeAgo } from "./helius";
 
 // ─── Config ───────────────────────────────────────────────────────
-const BAGS_BASE = process.env.BAGSFM_BASE_URL ?? "https://public-api-v2.bags.fm/api/v1";
-const BAGS_PRICE = process.env.BAGSFM_PRICE_URL ?? "https://api2.bags.fm/api/v1";
-const BAGS_API_KEY = process.env.BAGSFM_API_KEY ?? "";
-const DEX_BASE = process.env.DEXSCREENER_BASE_URL ?? "https://api.dexscreener.com";
+const HELIUS_RPC =
+  process.env.HELIUS_RPC_URL ?? "https://mainnet.helius-rpc.com";
+const HELIUS_KEY = process.env.HELIUS_API_KEY ?? "";
+const DEX_BASE =
+  process.env.DEXSCREENER_BASE_URL ?? "https://api.dexscreener.com";
 
-const bagsHeaders = {
-  Accept: "application/json",
-  "x-api-key": BAGS_API_KEY,
-};
-
-// ─── Bags API types ───────────────────────────────────────────────
-interface BagsPool {
-  tokenMint: string;
-  dbcConfigKey: string;
-  dbcPoolKey: string;
-  dammV2PoolKey: string | null;
-}
-
-interface BagsPoolsResponse {
-  success: boolean;
-  response: BagsPool[];
-}
-
-interface BagsCreator {
-  username: string;
-  pfp: string;
-  royaltyBps: number;
-  isCreator: boolean;
-  wallet: string;
-  provider: string;
-  twitterUsername: string;
-  bagsUsername: string;
-  isAdmin: boolean;
-}
-
-interface BagsCreatorsResponse {
-  success: boolean;
-  response: BagsCreator[];
-}
-
-interface BagsPriceResponse {
-  success: boolean;
-  response: {
-    priceUSD: number;
-    priceSOL: number;
-    volumeUSD: number;
-    volumeSOL: number;
-    tokenAddress: string;
-    blockTime: string;
+// ─── Helius DAS types ─────────────────────────────────────────────
+interface DasAsset {
+  id: string;
+  content?: {
+    metadata?: { name?: string; symbol?: string; description?: string };
+    links?: { image?: string };
   };
+  token_info?: {
+    decimals?: number;
+    supply?: number;
+    price_info?: {
+      price_per_token?: number;
+      currency?: string;
+    };
+  };
+  creators?: { address: string; share: number; verified: boolean }[];
+  mint_extensions?: unknown;
+}
+
+interface SearchAssetsResult {
+  items: DasAsset[];
+  total: number;
+  limit: number;
+  page: number;
 }
 
 // ─── DexScreener types ────────────────────────────────────────────
-// GET /tokens/v1/{chainId}/{tokenAddresses} → flat DexPair[]  (up to 30 addresses, comma-separated)
-// GET /token-pairs/v1/{chainId}/{tokenAddress} → flat DexPair[] for one token
-// Rate limit: 60 req/min (free tier)
+// GET /tokens/v1/{chainId}/{tokenAddresses} → flat DexPair[]
+// Rate limit: 60 req/min (free tier), max 30 addresses per call
 interface DexPair {
   chainId: string;
   dexId: string;
   url: string;
   pairAddress: string;
-  labels?: string[];
   baseToken: { address: string; name: string; symbol: string };
   quoteToken: { address: string; name: string; symbol: string };
   priceNative: string;
@@ -98,103 +74,110 @@ interface DexPair {
   pairCreatedAt?: number;
   info?: {
     imageUrl?: string;
-    header?: string;
-    openGraph?: string;
     websites?: { url: string; label?: string }[];
     socials?: { type: string; url: string }[];
   };
 }
 
-// ─── Helius DAS asset type (minimal) ─────────────────────────────
-interface DasAsset {
-  id: string;
-  content?: {
-    metadata?: { name?: string; symbol?: string; description?: string };
-    links?: { image?: string };
+// ─── Helius DAS RPC helper ────────────────────────────────────────
+async function dasPost(
+  method: string,
+  params: Record<string, unknown>,
+  revalidate = 60
+): Promise<unknown> {
+  if (!HELIUS_KEY) return null;
+  const res = await fetch(`${HELIUS_RPC}/?api-key=${HELIUS_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: "ohm", method, params }),
+    next: { revalidate },
+  });
+  if (!res.ok) throw new Error(`Helius DAS ${method} error: ${res.status}`);
+  const json = (await res.json()) as {
+    result?: unknown;
+    error?: { message: string };
   };
-  token_info?: { decimals?: number; supply?: number; price_info?: { price_per_token?: number } };
-  creators?: { address: string; share: number; verified: boolean }[];
+  if (json.error) throw new Error(json.error.message);
+  return json.result;
 }
 
-// ─── Fetch Bags pool list ─────────────────────────────────────────
-async function fetchBagsPools(onlyMigrated = false): Promise<BagsPool[]> {
-  if (!BAGS_API_KEY) {
-    console.warn("BAGSFM_API_KEY not set — skipping Bags pool fetch");
+// ─── 1. Token discovery via searchAssets ─────────────────────────
+// Returns recently created fungible tokens on Solana.
+// `showFungibleExtensions: true` includes token_info.price_info (Jupiter).
+async function searchFungibleTokens(
+  page = 1,
+  limit = 50
+): Promise<DasAsset[]> {
+  if (!HELIUS_KEY) {
+    console.warn("HELIUS_API_KEY not set — falling back to mock data");
     return [];
   }
   try {
-    const params = onlyMigrated ? "?onlyMigrated=true" : "";
-    const res = await fetch(`${BAGS_BASE}/solana/bags/pools${params}`, {
-      headers: bagsHeaders,
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) {
-      console.warn(`Bags pools fetch failed: ${res.status}`);
-      return [];
-    }
-    const data = (await res.json()) as BagsPoolsResponse;
-    return data.success ? data.response : [];
+    const result = (await dasPost(
+      "searchAssets",
+      {
+        tokenType: "fungible",
+        sortBy: { sortBy: "created", sortDirection: "desc" },
+        limit,
+        page,
+        options: {
+          showFungibleExtensions: true,
+        },
+      },
+      30
+    )) as SearchAssetsResult | null;
+
+    return result?.items ?? [];
   } catch (err) {
-    console.error("fetchBagsPools error:", err);
+    console.error("searchAssets error:", err);
     return [];
   }
 }
 
-// ─── Fetch single pool by token mint ─────────────────────────────
-export async function fetchBagsPoolByMint(tokenMint: string): Promise<BagsPool | null> {
-  if (!BAGS_API_KEY) return null;
-  try {
-    const res = await fetch(
-      `${BAGS_BASE}/solana/bags/pools/token-mint?tokenMint=${tokenMint}`,
-      { headers: bagsHeaders, next: { revalidate: 30 } }
-    );
-    if (!res.ok) return null;
-    const data = (await res.json()) as { success: boolean; response: BagsPool };
-    return data.success ? data.response : null;
-  } catch {
-    return null;
+// ─── 2. Batch metadata + price from getAssetBatch ─────────────────
+async function fetchHeliusAssets(
+  mints: string[]
+): Promise<Map<string, DasAsset>> {
+  const map = new Map<string, DasAsset>();
+  if (!mints.length || !HELIUS_KEY) return map;
+
+  // Max 100 per call (Helius limit)
+  const chunks: string[][] = [];
+  for (let i = 0; i < mints.length; i += 100) {
+    chunks.push(mints.slice(i, i + 100));
   }
+
+  await Promise.all(
+    chunks.map(async (chunk) => {
+      try {
+        const result = (await dasPost(
+          "getAssetBatch",
+          {
+            ids: chunk,
+            options: { showFungibleExtensions: true },
+          },
+          300
+        )) as DasAsset[] | null;
+
+        for (const asset of result ?? []) {
+          if (asset?.id) map.set(asset.id, asset);
+        }
+      } catch (err) {
+        console.error("getAssetBatch error:", err);
+      }
+    })
+  );
+
+  return map;
 }
 
-// ─── Fetch token creators from Bags ──────────────────────────────
-export async function fetchBagsCreators(tokenMint: string): Promise<BagsCreator[]> {
-  if (!BAGS_API_KEY) return [];
-  try {
-    const res = await fetch(
-      `${BAGS_BASE}/token-launch/creator/v3?tokenMint=${tokenMint}`,
-      { headers: bagsHeaders, next: { revalidate: 300 } }
-    );
-    if (!res.ok) return [];
-    const data = (await res.json()) as BagsCreatorsResponse;
-    return data.success ? data.response : [];
-  } catch {
-    return [];
-  }
-}
-
-// ─── Fetch price from api2.bags.fm ───────────────────────────────
-export async function fetchBagsPrice(tokenMint: string): Promise<number> {
-  try {
-    const res = await fetch(
-      `${BAGS_PRICE}/solana/latestPrice?token=${tokenMint}`,
-      { headers: { Accept: "application/json" }, next: { revalidate: 15 } }
-    );
-    if (!res.ok) return 0;
-    const data = (await res.json()) as BagsPriceResponse;
-    return data.success ? data.response.priceUSD : 0;
-  } catch {
-    return 0;
-  }
-}
-
-// ─── Fetch DexScreener data for multiple mints (max 30 per call) ──
-// Endpoint: GET https://api.dexscreener.com/tokens/v1/solana/{addr1,addr2,...}
-// Response: flat DexPair[] — all pairs for all requested tokens combined
-async function fetchDexScreenerBatch(mints: string[]): Promise<Map<string, DexPair>> {
+// ─── 3. DexScreener market data (volume / liquidity / change) ─────
+async function fetchDexScreenerBatch(
+  mints: string[]
+): Promise<Map<string, DexPair>> {
   const map = new Map<string, DexPair>();
   if (!mints.length) return map;
 
-  // DexScreener accepts up to 30 comma-separated addresses per call
   const chunks: string[][] = [];
   for (let i = 0; i < mints.length; i += 30) {
     chunks.push(mints.slice(i, i + 30));
@@ -216,11 +199,10 @@ async function fetchDexScreenerBatch(mints: string[]): Promise<Map<string, DexPa
         for (const pair of pairs) {
           const addr = pair.baseToken?.address;
           if (!addr) continue;
-          // Keep the pair with the highest liquidity (most relevant market)
+          // Keep pair with highest liquidity (best market)
           const existing = map.get(addr);
           const liq = pair.liquidity?.usd ?? 0;
-          const existingLiq = existing?.liquidity?.usd ?? 0;
-          if (!existing || liq > existingLiq) {
+          if (!existing || liq > (existing.liquidity?.usd ?? 0)) {
             map.set(addr, pair);
           }
         }
@@ -233,57 +215,13 @@ async function fetchDexScreenerBatch(mints: string[]): Promise<Map<string, DexPa
   return map;
 }
 
-// ─── Fetch Helius DAS metadata for multiple mints ─────────────────
-async function fetchHeliusAssets(mints: string[]): Promise<Map<string, DasAsset>> {
-  const map = new Map<string, DasAsset>();
-  if (!mints.length) return map;
-
-  const rpcUrl = process.env.HELIUS_RPC_URL;
-  if (!rpcUrl) return map;
-
-  // Helius getAssetBatch — up to 1000 per call
-  const chunks: string[][] = [];
-  for (let i = 0; i < mints.length; i += 100) {
-    chunks.push(mints.slice(i, i + 100));
-  }
-
-  await Promise.all(
-    chunks.map(async (chunk) => {
-      try {
-        const res = await fetch(`${rpcUrl}?api-key=${process.env.HELIUS_API_KEY ?? ""}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: "getAssetBatch",
-            method: "getAssetBatch",
-            params: { ids: chunk },
-          }),
-          next: { revalidate: 300 },
-        });
-        if (!res.ok) return;
-        const json = (await res.json()) as { result?: DasAsset[] };
-        if (!json.result) return;
-        for (const asset of json.result) {
-          if (asset?.id) map.set(asset.id, asset);
-        }
-      } catch (err) {
-        console.error("Helius getAssetBatch error:", err);
-      }
-    })
-  );
-
-  return map;
-}
-
-// ─── Normalize into Token ─────────────────────────────────────────
+// ─── Build unified Token object ───────────────────────────────────
 function buildToken(
   mint: string,
-  dex: DexPair | undefined,
   asset: DasAsset | undefined,
-  pool: BagsPool
+  dex: DexPair | undefined
 ): Token {
-  // Metadata from DexScreener (most complete) → fallback to Helius DAS
+  // Metadata: prefer DexScreener names (more complete), fall back to Helius DAS
   const name =
     dex?.baseToken.name ??
     asset?.content?.metadata?.name ??
@@ -293,25 +231,29 @@ function buildToken(
     asset?.content?.metadata?.symbol ??
     "???";
 
-  const price = dex?.priceUsd ? parseFloat(dex.priceUsd) : 0;
+  // Price: prefer DexScreener (live DEX price), fall back to Helius/Jupiter price_info
+  const dexPrice = dex?.priceUsd ? parseFloat(dex.priceUsd) : 0;
+  const heliusPrice = asset?.token_info?.price_info?.price_per_token ?? 0;
+  const price = dexPrice || heliusPrice;
+
+  // Price changes from DexScreener
   const change1h = dex?.priceChange?.h1 ?? 0;
   const change24h = dex?.priceChange?.h24 ?? 0;
-  const change7d = 0; // DexScreener free tier doesn't include 7d
+
+  // Volume / liquidity from DexScreener
   const volume24h = dex?.volume?.h24 ?? 0;
   const liquidity = dex?.liquidity?.usd ?? 0;
   const marketCap = dex?.marketCap ?? dex?.fdv ?? 0;
   const fdv = dex?.fdv ?? marketCap;
 
-  // Supply from Helius DAS token_info
-  const supply = asset?.token_info?.supply ?? 0;
+  // Supply from Helius DAS
   const decimals = asset?.token_info?.decimals ?? 6;
-  const adjustedSupply = decimals ? supply / Math.pow(10, decimals) : supply;
+  const rawSupply = asset?.token_info?.supply ?? 0;
+  const supply = rawSupply / Math.pow(10, decimals);
 
-  // Logo: DexScreener info > Helius content
+  // Logo: DexScreener > Helius DAS
   const logoUrl =
-    dex?.info?.imageUrl ??
-    asset?.content?.links?.image ??
-    null;
+    dex?.info?.imageUrl ?? asset?.content?.links?.image ?? null;
 
   // Socials from DexScreener
   const twitter = dex?.info?.socials?.find((s) => s.type === "twitter")?.url;
@@ -325,9 +267,6 @@ function buildToken(
     ? (Date.now() - ageTimestamp * 1000) / 3600000
     : 999;
 
-  // Is migrated to DAMM v2?
-  const isMigrated = pool.dammV2PoolKey !== null;
-
   return {
     id: mint,
     address: mint,
@@ -337,7 +276,7 @@ function buildToken(
     priceFormatted: fmtPrice(price),
     change1h,
     change24h,
-    change7d,
+    change7d: 0,
     change30d: 0,
     age: ageTimestamp ? timeAgo(ageTimestamp) : "–",
     ageTimestamp,
@@ -347,9 +286,9 @@ function buildToken(
     volume24hFormatted: volume24h ? `$${fmtAmount(volume24h)}` : "–",
     liquidity,
     liquidityFormatted: liquidity ? `$${fmtAmount(liquidity)}` : "–",
-    holders: 0, // fetched separately via Helius RPC when needed
-    supply: adjustedSupply,
-    supplyFormatted: adjustedSupply ? fmtAmount(adjustedSupply) : "–",
+    holders: 0,
+    supply,
+    supplyFormatted: supply ? fmtAmount(supply) : "–",
     fdv,
     fdvFormatted: fdv ? `$${fmtAmount(fdv)}` : "–",
     fees: 0,
@@ -358,10 +297,9 @@ function buildToken(
     isNew: ageHours < 24,
     isHot: change24h > 50,
     socials: { twitter, website },
-    launchpad: "bags.fm",
+    launchpad: "helius",
     description: asset?.content?.metadata?.description,
-    creator: undefined,
-    isMigrated,
+    creator: asset?.creators?.[0]?.address,
   };
 }
 
@@ -378,41 +316,34 @@ export async function fetchLaunchpadTokens({
   tab?: string;
 } = {}): Promise<Token[]> {
   try {
-    // 1. Get pool list from Bags API
-    const pools = await fetchBagsPools();
+    // 1. Discover recently launched fungible tokens via Helius searchAssets
+    const assets = await searchFungibleTokens(page, limit);
 
-    if (!pools.length) {
-      console.warn("No Bags pools returned — falling back to mock data");
+    if (!assets.length) {
+      console.warn("searchAssets returned no results — falling back to mock data");
       return getMockTokens();
     }
 
-    // Paginate
-    const start = (page - 1) * limit;
-    const paginated = pools.slice(start, start + limit);
-    const mints = paginated.map((p) => p.tokenMint);
+    const mints = assets.map((a) => a.id);
 
-    // 2. Parallel: DexScreener market data + Helius metadata
-    const [dexMap, assetMap] = await Promise.all([
-      fetchDexScreenerBatch(mints),
-      fetchHeliusAssets(mints),
-    ]);
+    // 2. Parallel: DexScreener market data (assets already have Helius data)
+    const dexMap = await fetchDexScreenerBatch(mints);
 
-    // 3. Build Token objects
-    let tokens = paginated.map((pool) =>
-      buildToken(pool.tokenMint, dexMap.get(pool.tokenMint), assetMap.get(pool.tokenMint), pool)
+    // 3. Build token objects (asset already fetched from searchAssets)
+    const assetMap = new Map(assets.map((a) => [a.id, a]));
+    let tokens = mints.map((mint) =>
+      buildToken(mint, assetMap.get(mint), dexMap.get(mint))
     );
 
     // 4. Sort by tab
     if (tab === "new") {
       tokens = tokens.sort((a, b) => b.ageTimestamp - a.ageTimestamp);
     } else {
-      // trending = sort by 24h volume desc
+      // trending = highest 24h volume
       tokens = tokens.sort((a, b) => b.volume24h - a.volume24h);
     }
 
-    // Filter by timeframe change for display (data is always 24h from DexScreener)
-    void timeframe; // timeframe affects UI display only, not the fetch
-
+    void timeframe;
     return tokens;
   } catch (err) {
     console.error("fetchLaunchpadTokens error:", err);
@@ -421,22 +352,16 @@ export async function fetchLaunchpadTokens({
 }
 
 // ─── Fetch single token by address ───────────────────────────────
-export async function fetchTokenByAddress(address: string): Promise<Token | null> {
+export async function fetchTokenByAddress(
+  address: string
+): Promise<Token | null> {
   try {
-    const [pool, dexMap, assetMap] = await Promise.all([
-      fetchBagsPoolByMint(address),
-      fetchDexScreenerBatch([address]),
+    const [assetMap, dexMap] = await Promise.all([
       fetchHeliusAssets([address]),
+      fetchDexScreenerBatch([address]),
     ]);
 
-    const fakePool: BagsPool = pool ?? {
-      tokenMint: address,
-      dbcConfigKey: "",
-      dbcPoolKey: "",
-      dammV2PoolKey: null,
-    };
-
-    return buildToken(address, dexMap.get(address), assetMap.get(address), fakePool);
+    return buildToken(address, assetMap.get(address), dexMap.get(address));
   } catch (err) {
     console.error("fetchTokenByAddress error:", err);
     return null;
@@ -485,7 +410,7 @@ export async function fetchOverviewStats(): Promise<OverviewStats> {
   }
 }
 
-// ─── Mock data (fallback when API key not configured) ─────────────
+// ─── Mock data (fallback when HELIUS_API_KEY not set) ─────────────
 function getMockTokens(): Token[] {
   const now = Date.now();
   const mocks = [
@@ -526,25 +451,31 @@ function getMockTokens(): Token[] {
     },
   ];
 
-  return mocks.map((m) => {
-    const ageHours = (now - m.ageTimestamp * 1000) / 3600000;
-    const pool: BagsPool = { tokenMint: m.address, dbcConfigKey: "", dbcPoolKey: "", dammV2PoolKey: null };
-    return buildToken(
+  return mocks.map((m) =>
+    buildToken(
       m.address,
       {
-        chainId: "solana", dexId: "raydium", pairAddress: "",
+        id: m.address,
+        content: {
+          metadata: { name: m.name, symbol: m.ticker },
+        },
+        token_info: { supply: m.supply, decimals: 0 },
+      } as DasAsset,
+      {
+        chainId: "solana",
+        dexId: "raydium",
+        pairAddress: "",
         baseToken: { address: m.address, name: m.name, symbol: m.ticker },
         quoteToken: { address: "", name: "USDC", symbol: "USDC" },
-        priceNative: "0", priceUsd: String(m.price),
+        priceNative: "0",
+        priceUsd: String(m.price),
         priceChange: { h1: m.change1h, h24: m.change24h },
         volume: { h24: m.volume24h },
         liquidity: { usd: m.liquidity },
-        marketCap: m.marketCap, fdv: m.marketCap,
+        marketCap: m.marketCap,
+        fdv: m.marketCap,
         pairCreatedAt: m.ageTimestamp * 1000,
-      } as DexPair,
-      undefined,
-      pool
-    );
-    void ageHours;
-  });
+      } as DexPair
+    )
+  );
 }
