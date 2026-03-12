@@ -1,16 +1,9 @@
 "use client";
 
 import { PrivyProvider } from "@privy-io/react-auth";
-import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
-
-// Solana connectors — detects installed browser wallets (Phantom, Solflare, etc.)
-// and shows a "Detected" badge next to them in the connect modal
-const solanaConnectors = toSolanaWalletConnectors({
-  shouldAutoConnect: false, // don't auto-connect on page load, let user choose
-});
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -52,10 +45,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             rpcUrl: "https://api.mainnet-beta.solana.com",
           },
         ],
-        externalWallets: {
-          // Register the Solana connectors so Privy probes for installed wallets
-          solana: { connectors: solanaConnectors },
-        },
         embeddedWallets: {
           // Create a Privy-managed Solana wallet for users who have no wallet
           solana: { createOnLogin: "users-without-wallets" },
