@@ -28,8 +28,18 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           theme: "dark",
           accentColor: "#03A338",
           logo: "/logo.svg",
+          // Prioritise Solana-native wallets; Privy auto-detects
+          // which ones are installed and highlights them first
+          walletList: [
+            "phantom",
+            "solflare",
+            "backpack",
+            "okx_wallet",
+            "coinbase_wallet",
+          ],
         },
         embeddedWallets: {
+          // Create a Privy-managed Solana wallet for users who have no wallet
           solana: { createOnLogin: "users-without-wallets" },
         },
       }}
