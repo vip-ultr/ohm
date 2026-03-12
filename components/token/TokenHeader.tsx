@@ -32,7 +32,7 @@ export default function TokenHeader({ address }: { address: string }) {
     );
   }
 
-  const jupiterUrl = `https://jup.ag/swap/SOL-${address}`;
+  const bagsUrl = `https://bags.fm/token/${address}`;
 
   return (
     <div className="token-header">
@@ -98,8 +98,8 @@ export default function TokenHeader({ address }: { address: string }) {
             <span className="token-meta-val">{token.fdvFormatted}</span>
           </div>
         </div>
-        <Link href={jupiterUrl} target="_blank" rel="noopener noreferrer" className="token-buy-btn">
-          BUY <ExternalLink size={12} />
+        <Link href={bagsUrl} target="_blank" rel="noopener noreferrer" className="token-buy-btn">
+          Buy on Bags <ExternalLink size={12} />
         </Link>
       </div>
     </div>

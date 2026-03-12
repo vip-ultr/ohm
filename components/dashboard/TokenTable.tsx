@@ -100,7 +100,7 @@ export default function TokenTable({ initialData }: TokenTableProps) {
                 displayTokens.map((token, i) => {
                   const change = token[changeKey as keyof Token] as number;
                   const positive = change >= 0;
-                  const jupiterUrl = `https://jup.ag/swap/SOL-${token.address}`;
+                  const bagsUrl = `https://bags.fm/token/${token.address}`;
 
                   return (
                     <tr
@@ -163,13 +163,13 @@ export default function TokenTable({ initialData }: TokenTableProps) {
                       {/* Buy */}
                       <td className="td-buy">
                         <a
-                          href={jupiterUrl}
+                          href={bagsUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="buy-btn"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          Buy <ExternalLink size={10} />
+                          Buy on Bags <ExternalLink size={10} />
                         </a>
                       </td>
                     </tr>

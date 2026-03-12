@@ -578,7 +578,7 @@ body {
   left: 0;
   right: 0;
   background: var(--bg2);
-  border: 1.5px solid var(--border2);
+  border: 2px solid var(--border2);
   border-radius: 8px;
   box-shadow: var(--shadow-lg);
   z-index: 300;
@@ -1106,7 +1106,7 @@ body {
 ═══════════════════════════════════════════════════════════════════ */
 .token-table-wrap {
   overflow-x: auto;
-  border: 1.5px solid var(--border2);
+  border: 2px solid var(--border2);
   border-radius: 0;
 }
 
@@ -1125,15 +1125,15 @@ body {
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  border-bottom: 1.5px solid var(--border2);
-  border-right: 1.5px solid var(--border);
+  border-bottom: 2px solid var(--border2);
+  border-right: 2px solid var(--border2);
   white-space: nowrap;
 }
 
 .token-table thead th:last-child { border-right: none; }
 
 .token-table tbody tr {
-  border-bottom: 1.5px solid var(--border);
+  border-bottom: 2px solid var(--border2);
   cursor: pointer;
   transition: background 0.12s ease;
 }
@@ -1147,7 +1147,7 @@ body {
   font-size: 14px;
   color: var(--text);
   white-space: nowrap;
-  border-right: 1.5px solid var(--border);
+  border-right: 2px solid var(--border2);
 }
 
 .token-table td:last-child { border-right: none; }
@@ -1260,7 +1260,7 @@ body {
 ═══════════════════════════════════════════════════════════════════ */
 .data-table-wrap {
   overflow-x: auto;
-  border: 1.5px solid var(--border2);
+  border: 2px solid var(--border2);
   border-radius: 0;
 }
 
@@ -1278,15 +1278,15 @@ body {
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  border-bottom: 1.5px solid var(--border2);
-  border-right: 1.5px solid var(--border);
+  border-bottom: 2px solid var(--border2);
+  border-right: 2px solid var(--border2);
   white-space: nowrap;
 }
 
 .data-table thead th:last-child { border-right: none; }
 
 .data-table tbody tr {
-  border-bottom: 1.5px solid var(--border);
+  border-bottom: 2px solid var(--border2);
   transition: background 0.15s ease;
 }
 
@@ -1298,7 +1298,7 @@ body {
   padding: 12px 14px;
   font-size: 13px;
   color: var(--text);
-  border-right: 1.5px solid var(--border);
+  border-right: 2px solid var(--border2);
 }
 
 .data-table td:last-child { border-right: none; }
@@ -2093,6 +2093,44 @@ body {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin { animation: spin 0.7s linear infinite; }
+
+/* Address detect row variants */
+.search-row-addr-detect { cursor: pointer; }
+
+.search-row-addr-text {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.search-row-badge.addr {
+  background: rgba(255, 200, 50, 0.12);
+  color: #f5c842;
+  border: 1px solid rgba(255, 200, 50, 0.28);
+}
+
+.search-row-badge.detecting {
+  background: rgba(130, 130, 130, 0.12);
+  color: var(--text3);
+  border: 1px solid var(--border2);
+}
+
+.search-row-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text3);
+  justify-content: center;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
