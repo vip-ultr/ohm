@@ -1,18 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { ExternalLink, Twitter, MessageCircle, Globe } from "lucide-react";
+import { ExternalLink, Globe } from "lucide-react";
+import { FaXTwitter, FaDiscord, FaTelegram } from "react-icons/fa6";
 import { useTokenAnalytics, useXMentions } from "@/hooks/useTokenData";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { TokenAvatar } from "@/components/ui/TokenAvatar";
 import { shortenAddr } from "@/lib/helius";
 import { Skeleton } from "@/components/ui/Skeleton";
 
-interface TokenHeaderProps {
-  address: string;
-}
-
-export default function TokenHeader({ address }: TokenHeaderProps) {
+export default function TokenHeader({ address }: { address: string }) {
   const { data: token, isLoading } = useTokenAnalytics(address);
   const { data: mentions } = useXMentions(token?.ticker ?? "", address);
 
@@ -20,91 +17,59 @@ export default function TokenHeader({ address }: TokenHeaderProps) {
     return (
       <div className="token-header">
         <div className="token-header-left">
-          <Skeleton style={{ width: 52, height: 52, borderRadius: "50%" }} />
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <Skeleton style={{ width: 160, height: 24 }} />
-            <Skeleton style={{ width: 100, height: 14 }} />
-            <Skeleton style={{ width: 200, height: 14 }} />
+          <Skeleton style={{ width: 56, height: 56, borderRadius: "50%", flexShrink: 0 }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <Skeleton style={{ width: 180, height: 22 }} />
+            <Skeleton style={{ width: 120, height: 13 }} />
+            <Skeleton style={{ width: 200, height: 13 }} />
           </div>
         </div>
         <div className="token-header-right">
-          <Skeleton style={{ width: 140, height: 40, borderRadius: 8 }} />
+          <Skeleton style={{ width: 320, height: 84, borderRadius: 8 }} />
+          <Skeleton style={{ width: 90, height: 34, borderRadius: 7 }} />
         </div>
       </div>
     );
   }
 
-  const bagsUrl = `https://bags.fm/token/${address}`;
+  const jupiterUrl = `https://jup.ag/swap/SOL-${address}`;
 
   return (
     <div className="token-header">
-      {/* Left: Logo + info */}
+      {/* Left: logo + name + CA + socials */}
       <div className="token-header-left">
-        <TokenAvatar
-          name={token.name}
-          ticker={token.ticker}
-          address={token.address}
-          logoUrl={token.logoUrl}
-          size="lg"
-        />
-
+        <TokenAvatar name={token.name} ticker={token.ticker} address={token.address} logoUrl={token.logoUrl} size="lg" />
         <div className="token-header-info">
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="token-name-row">
             <span className="token-name">{token.name}</span>
-            <span className="token-ticker">${token.ticker}</span>
+            <span className="token-ticker">{token.ticker}</span>
             {token.isNew && <span className="new-badge">NEW</span>}
-            {token.isHot && <span className="hot-badge">🔥 HOT</span>}
+            {token.isHot && <span className="hot-badge">🔥</span>}
           </div>
-
-          {/* Contract address */}
           <div className="token-ca">
-            <span style={{ color: "var(--text4)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.8px" }}>
-              CA:
-            </span>
-            <span>{shortenAddr(address, 6)}</span>
-            <CopyButton text={address} size={13} />
+            <span className="token-ca-label">Token</span>
+            <span>{shortenAddr(address, 8)}</span>
+            <CopyButton text={address} size={12} />
           </div>
-
-          {/* Social links */}
           <div className="token-socials">
             {token.socials.twitter && (
-              <Link
-                href={token.socials.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="token-social-link"
-                title="Twitter / X"
-              >
-                <Twitter size={15} />
+              <Link href={token.socials.twitter} target="_blank" rel="noopener noreferrer" className="token-social-link" title="X">
+                <FaXTwitter size={14} />
               </Link>
             )}
             {token.socials.telegram && (
-              <Link
-                href={token.socials.telegram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="token-social-link"
-                title="Telegram"
-              >
-                <MessageCircle size={15} />
+              <Link href={token.socials.telegram} target="_blank" rel="noopener noreferrer" className="token-social-link" title="Telegram">
+                <FaTelegram size={14} />
               </Link>
             )}
             {token.socials.website && (
-              <Link
-                href={token.socials.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="token-social-link"
-                title="Website"
-              >
-                <Globe size={15} />
+              <Link href={token.socials.website} target="_blank" rel="noopener noreferrer" className="token-social-link" title="Website">
+                <Globe size={14} />
               </Link>
             )}
-
-            {/* X mentions badge */}
             {mentions && (
               <div className="x-mentions">
-                <Twitter size={12} />
+                <FaXTwitter size={11} />
                 <span className="x-mentions-count">{mentions.count}</span>
                 <span>mentions</span>
               </div>
@@ -113,37 +78,29 @@ export default function TokenHeader({ address }: TokenHeaderProps) {
         </div>
       </div>
 
-      {/* Right: Buy button + price */}
+      {/* Right: meta key-value table + BUY */}
       <div className="token-header-right">
-        <Link
-          href={bagsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="buy-btn"
-        >
-          Buy on Bags.fm
-          <ExternalLink size={13} />
-        </Link>
-
-        <div style={{ textAlign: "right" }}>
-          <div
-            style={{
-              fontSize: 28,
-              fontWeight: 700,
-              color: "var(--text)",
-              fontFamily: "var(--font-mono, monospace)",
-            }}
-          >
-            {token.priceFormatted}
+        <div className="token-meta-table">
+          <div className="token-meta-cell">
+            <span className="token-meta-key">Supply</span>
+            <span className="token-meta-val">{token.supplyFormatted}</span>
           </div>
-          <div
-            className={token.change24h >= 0 ? "positive" : "negative"}
-            style={{ fontSize: 14, fontWeight: 600 }}
-          >
-            {token.change24h >= 0 ? "+" : ""}
-            {token.change24h.toFixed(2)}% (24h)
+          <div className="token-meta-cell">
+            <span className="token-meta-key">Liquidity</span>
+            <span className="token-meta-val">{token.liquidityFormatted}</span>
+          </div>
+          <div className="token-meta-cell">
+            <span className="token-meta-key">Market Cap</span>
+            <span className="token-meta-val">{token.marketCapFormatted}</span>
+          </div>
+          <div className="token-meta-cell">
+            <span className="token-meta-key">FDV</span>
+            <span className="token-meta-val">{token.fdvFormatted}</span>
           </div>
         </div>
+        <Link href={jupiterUrl} target="_blank" rel="noopener noreferrer" className="token-buy-btn">
+          BUY <ExternalLink size={12} />
+        </Link>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { SiSolana } from "react-icons/si";
 import { AlertCircle, Code2 } from "lucide-react";
 import { CopyButton } from "@/components/ui/CopyButton";
 
-const CONTRACT_ADDRESS = "OHMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+const CONTRACT_ADDRESS = "2xQcYitABjwjVEc5Z5zZ97N33BhGD27zNWUhv2Q7pump";
 const SHORT_CA = `${CONTRACT_ADDRESS.slice(0, 4)}...${CONTRACT_ADDRESS.slice(-4)}`;
 
 function Divider() {

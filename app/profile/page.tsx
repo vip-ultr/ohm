@@ -8,11 +8,11 @@ import BalanceCards from "@/components/profile/BalanceCards";
 import HoldingsTab from "@/components/profile/HoldingsTab";
 import HistoryTab from "@/components/profile/HistoryTab";
 import type { ProfileTab, WalletPortfolio } from "@/types";
-import { Wallet } from "lucide-react";
+import { History, Layers } from "lucide-react";
 
-const TABS: { id: ProfileTab; label: string }[] = [
-  { id: "holdings", label: "Holdings" },
-  { id: "history", label: "History" },
+const TABS: { id: ProfileTab; label: string; icon: React.ReactNode }[] = [
+  { id: "holdings", label: "Holdings", icon: <Layers size={13} /> },
+  { id: "history",  label: "History",  icon: <History size={13} /> },
 ];
 
 export default function ProfilePage() {
@@ -30,15 +30,14 @@ export default function ProfilePage() {
     staleTime: 30_000,
   });
 
-  // Show loading state while Privy initializes
   if (!ready) {
     return (
       <div className="page-enter">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div className="skeleton" style={{ height: 80, borderRadius: 12 }} />
+          <div className="skeleton" style={{ height: 60, borderRadius: 10 }} />
           <div className="balances-grid">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="skeleton" style={{ height: 80, borderRadius: 10 }} />
+              <div key={i} className="skeleton" style={{ height: 90 }} />
             ))}
           </div>
         </div>
@@ -46,67 +45,46 @@ export default function ProfilePage() {
     );
   }
 
-  // Not connected: show connect prompt
   if (!authenticated) {
     return (
-      <div className="page-enter">
-        <div className="profile-connect">
-          <div className="profile-connect-icon">
-            <Wallet size={52} color="var(--text4)" />
-          </div>
-          <div className="profile-connect-msg">Connect to see your portfolio</div>
-          <div className="profile-connect-sub">
-            Link your wallet or sign in with email or social via Privy
-          </div>
-          <button className="btn-primary" onClick={login} style={{ marginTop: 8 }}>
-            Connect Wallet
-          </button>
-        </div>
+      <div className="profile-connect">
+        <h1 className="profile-connect-msg">See &amp; Manage your Portfolio</h1>
+        <p className="profile-connect-sub">
+          Connect your Solana wallet or sign in with email to view holdings and history
+        </p>
+        <button className="profile-connect-btn" onClick={login}>
+          Connect
+        </button>
       </div>
     );
   }
 
   return (
     <div className="page-enter">
-      {/* Page header */}
-      <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)" }}>
-          My Portfolio
-        </h1>
-      </div>
-
-      {/* Wallet info card */}
       <WalletInfo address={address!} onDisconnect={logout} />
-
-      {/* Balance cards */}
       <BalanceCards portfolio={portfolio} loading={isLoading} />
 
-      {/* Tabs: Holdings / History */}
-      <div
-        style={{
-          background: "var(--bg2)",
-          border: "1px solid var(--border)",
-          borderRadius: 12,
-          padding: 20,
-        }}
-      >
-        <div className="tabs-bar">
+      {/* Orb-style data tabs */}
+      <div className="orb-data-tabs">
+        <div className="orb-data-tabs-bar">
           {TABS.map((t) => (
             <button
               key={t.id}
-              className={`tab-item ${tab === t.id ? "active" : ""}`}
+              className={`orb-data-tab ${tab === t.id ? "active" : ""}`}
               onClick={() => setTab(t.id)}
             >
+              {t.icon}
               {t.label}
             </button>
           ))}
         </div>
-
-        {tab === "holdings" ? (
-          <HoldingsTab data={portfolio?.holdings} />
-        ) : (
-          <HistoryTab data={portfolio?.history} />
-        )}
+        <div className="orb-data-tab-content" style={{ padding: 20 }}>
+          {tab === "holdings" ? (
+            <HoldingsTab data={portfolio?.holdings} />
+          ) : (
+            <HistoryTab data={portfolio?.history} />
+          )}
+        </div>
       </div>
     </div>
   );

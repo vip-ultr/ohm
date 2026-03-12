@@ -2,65 +2,64 @@
 
 import { useTokenTrades } from "@/hooks/useTokenData";
 import { TableSkeleton } from "@/components/ui/Skeleton";
+import { CopyButton } from "@/components/ui/CopyButton";
 import { ArrowUpRight, ArrowDownLeft } from "lucide-react";
 
-interface TradesTabProps {
-  address: string;
-}
-
-export default function TradesTab({ address }: TradesTabProps) {
+export default function TradesTab({ address }: { address: string }) {
   const { data: trades = [], isLoading } = useTokenTrades(address);
 
   if (isLoading) return <TableSkeleton rows={8} cols={5} />;
 
   return (
-    <div className="data-table-wrap">
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Type</th>
-            <th>Amount</th>
-            <th>Value</th>
-            <th>Wallet</th>
-          </tr>
-        </thead>
-        <tbody>
-          {trades.length === 0 ? (
+    <div>
+      <div className="orb-tab-subheader">
+        <span className="orb-tab-subheader-label">Recent transactions</span>
+        <div className="orb-live-badge">
+          <span className="live-dot" />
+          Live
+        </div>
+      </div>
+      <div className="data-table-wrap">
+        <table className="data-table">
+          <thead>
             <tr>
-              <td colSpan={5} style={{ textAlign: "center", padding: 32, color: "var(--text3)" }}>
-                No recent trades
-              </td>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Value</th>
+              <th>Time</th>
+              <th>Signature</th>
             </tr>
-          ) : (
-            trades.map((trade) => (
-              <tr key={trade.id}>
-                <td style={{ color: "var(--text3)", fontFamily: "monospace", fontSize: 12 }}>
-                  {trade.time}
-                </td>
-                <td>
-                  {trade.type === "buy" ? (
-                    <span className="buy-tag">
-                      <ArrowUpRight size={11} />
-                      BUY
-                    </span>
-                  ) : (
-                    <span className="sell-tag">
-                      <ArrowDownLeft size={11} />
-                      SELL
-                    </span>
-                  )}
-                </td>
-                <td style={{ fontFamily: "monospace" }}>{trade.amount}</td>
-                <td style={{ fontFamily: "monospace" }}>{trade.value}</td>
-                <td style={{ fontFamily: "monospace", color: "var(--text3)", fontSize: 12 }}>
-                  {trade.wallet}
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {trades.length === 0 ? (
+              <tr><td colSpan={5} className="table-empty">No recent trades</td></tr>
+            ) : (
+              trades.map((trade) => {
+                const isBuy = trade.type === "buy";
+                return (
+                  <tr key={trade.id} className={isBuy ? "row-buy" : "row-sell"}>
+                    <td>
+                      <span className={`trade-type-badge ${isBuy ? "buy" : "sell"}`}>
+                        {isBuy ? <ArrowUpRight size={12} /> : <ArrowDownLeft size={12} />}
+                        Swap
+                      </span>
+                    </td>
+                    <td className="td-mono">{trade.amount}</td>
+                    <td className="td-mono">{trade.value}</td>
+                    <td className="td-time">{trade.time}</td>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span className="td-mono td-muted">{trade.wallet}</span>
+                        <CopyButton text={trade.wallet} size={12} />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
