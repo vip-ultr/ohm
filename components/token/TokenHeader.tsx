@@ -17,7 +17,7 @@ export default function TokenHeader({ address }: { address: string }) {
     return (
       <div className="token-header">
         <div className="token-header-left">
-          <Skeleton style={{ width: 56, height: 56, borderRadius: "50%", flexShrink: 0 }} />
+          <Skeleton style={{ width: 56, height: 56, borderRadius: 0, flexShrink: 0 }} />
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <Skeleton style={{ width: 180, height: 22 }} />
             <Skeleton style={{ width: 120, height: 13 }} />
@@ -25,8 +25,8 @@ export default function TokenHeader({ address }: { address: string }) {
           </div>
         </div>
         <div className="token-header-right">
-          <Skeleton style={{ width: 320, height: 84, borderRadius: 8 }} />
-          <Skeleton style={{ width: 90, height: 34, borderRadius: 7 }} />
+          <Skeleton style={{ width: 320, height: 84, borderRadius: 0 }} />
+          <Skeleton style={{ width: 90, height: 34, borderRadius: 0 }} />
         </div>
       </div>
     );

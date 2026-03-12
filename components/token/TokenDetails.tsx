@@ -14,7 +14,7 @@ export default function TokenDetails({ address }: { address: string }) {
           <div key={i} className="token-stat-box">
             <div className="token-stat-box-header">
               <Skeleton style={{ height: 11, width: 80 }} />
-              <Skeleton style={{ height: 18, width: 50, borderRadius: 4 }} />
+              <Skeleton style={{ height: 18, width: 50, borderRadius: 0 }} />
             </div>
             <Skeleton style={{ height: 36, width: "60%", marginTop: 8 }} />
           </div>

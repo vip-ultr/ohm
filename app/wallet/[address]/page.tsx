@@ -54,7 +54,7 @@ export default function WalletPage() {
               width: 48, height: 48,
               background: "var(--green-subtle)",
               border: "1px solid var(--green)",
-              borderRadius: 12,
+              borderRadius: 0,
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
             }}

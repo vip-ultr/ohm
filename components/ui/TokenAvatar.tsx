@@ -30,7 +30,7 @@ export function TokenAvatar({
 
   if (logoUrl) {
     return (
-      <div className={cn(sizeClass, className)} style={{ borderRadius: "50%", overflow: "hidden", position: "relative" }}>
+      <div className={cn(sizeClass, className)} style={{ borderRadius: 0, overflow: "hidden", position: "relative" }}>
         <Image
           src={logoUrl}
           alt={name}

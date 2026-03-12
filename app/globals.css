@@ -132,7 +132,7 @@ body {
   width: 28px;
   height: 28px;
   background: var(--green);
-  border-radius: 6px;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -170,7 +170,7 @@ body {
   color: var(--text2);
   cursor: pointer;
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: 0;
   transition: color 0.15s, background 0.15s;
   display: flex;
   align-items: center;
@@ -203,7 +203,7 @@ body {
   font-size: 13px;
   font-weight: 600;
   padding: 7px 16px;
-  border-radius: 7px;
+  border-radius: 0;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
   white-space: nowrap;
@@ -231,7 +231,7 @@ body {
   justify-content: center;
   background: none;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 0;
   color: var(--text3);
   cursor: pointer;
   transition: color 0.15s, background 0.15s, border-color 0.15s;
@@ -256,7 +256,7 @@ body {
   width: 200px;
   background: var(--bg2);
   border: 1px solid var(--border2);
-  border-radius: 10px;
+  border-radius: 0;
   box-shadow: var(--shadow-lg);
   padding: 6px;
   z-index: 200;
@@ -291,7 +291,7 @@ body {
   padding: 8px 10px;
   background: none;
   border: none;
-  border-radius: 6px;
+  border-radius: 0;
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -398,7 +398,7 @@ body {
   gap: 8px;
   background: var(--bg3);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 0;
   padding: 5px 12px;
   flex-shrink: 0;
 }
@@ -489,7 +489,7 @@ body {
   width: 100%;
   background: var(--bg3);
   border: 1px solid var(--border2);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 9px 16px 9px 40px;
   font-family: inherit;
   font-size: 14px;
@@ -526,7 +526,7 @@ body {
   gap: 0;
   background: var(--bg3);
   border: 1px solid var(--border2);
-  border-radius: 8px;
+  border-radius: 0;
   transition: border-color 0.2s, box-shadow 0.2s;
   overflow: hidden;
 }
@@ -579,7 +579,7 @@ body {
   right: 0;
   background: var(--bg2);
   border: 2px solid var(--border2);
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: var(--shadow-lg);
   z-index: 300;
   overflow: hidden;
@@ -614,7 +614,7 @@ body {
   height: 28px;
   background: var(--bg4);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -690,7 +690,7 @@ body {
   letter-spacing: 0.8px;
   text-transform: uppercase;
   padding: 2px 7px;
-  border-radius: 4px;
+  border-radius: 0;
   flex-shrink: 0;
 }
 
@@ -728,7 +728,7 @@ body {
   font-size: 14px;
   font-weight: 600;
   padding: 9px 20px;
-  border-radius: 8px;
+  border-radius: 0;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
@@ -758,7 +758,7 @@ body {
   font-size: 13px;
   font-weight: 500;
   padding: 7px 14px;
-  border-radius: 7px;
+  border-radius: 0;
   border: 1px solid var(--border2);
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
@@ -779,7 +779,7 @@ body {
 .btn-icon {
   background: var(--bg3);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px;
   cursor: pointer;
   color: var(--text3);
@@ -802,7 +802,7 @@ body {
   font-size: 14px;
   font-weight: 700;
   padding: 8px 18px;
-  border-radius: 8px;
+  border-radius: 0;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease, box-shadow 0.2s ease;
@@ -820,7 +820,7 @@ body {
 .card {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -862,7 +862,7 @@ body {
   display: flex;
   align-items: center;
   padding: 2px;
-  border-radius: 4px;
+  border-radius: 0;
   transition: color 0.2s ease, background 0.2s ease;
   position: relative;
 }
@@ -905,7 +905,7 @@ body {
   font-size: 12px;
   font-weight: 600;
   padding: 3px 8px;
-  border-radius: 5px;
+  border-radius: 0;
 }
 
 .sell-tag {
@@ -917,7 +917,7 @@ body {
   font-size: 12px;
   font-weight: 600;
   padding: 3px 8px;
-  border-radius: 5px;
+  border-radius: 0;
 }
 
 .whale-tag {
@@ -926,7 +926,7 @@ body {
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .new-badge {
@@ -935,7 +935,7 @@ body {
   font-size: 10px;
   font-weight: 700;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 0;
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
@@ -946,7 +946,7 @@ body {
   font-size: 10px;
   font-weight: 700;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 0;
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
@@ -970,7 +970,7 @@ body {
   align-items: center;
   gap: 0;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--bg2);
   padding: 12px 20px;
   margin-bottom: 20px;
@@ -1078,7 +1078,7 @@ body {
   color: var(--text3);
   cursor: pointer;
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 0;
   transition: color 0.15s ease, background 0.15s ease;
 }
 
@@ -1223,7 +1223,7 @@ body {
   padding: 4px;
   display: flex;
   align-items: center;
-  border-radius: 4px;
+  border-radius: 0;
   transition: opacity 0.15s ease;
 }
 
@@ -1242,7 +1242,7 @@ body {
   color: var(--text2);
   background: var(--bg3);
   border: 1px solid var(--border2);
-  border-radius: 6px;
+  border-radius: 0;
   padding: 5px 12px;
   text-decoration: none;
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
@@ -1348,14 +1348,14 @@ body {
   gap: 2px;
   background: var(--bg3);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 0;
   padding: 3px;
 }
 
 .time-btn {
   background: transparent;
   border: none;
-  border-radius: 5px;
+  border-radius: 0;
   padding: 4px 12px;
   font-family: inherit;
   font-size: 12px;
@@ -1409,7 +1409,7 @@ body {
 .chart-section {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
   margin-bottom: 24px;
 }
@@ -1443,7 +1443,7 @@ body {
 .stat-card {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 16px;
   transition: border-color 0.2s ease;
 }
@@ -1521,7 +1521,7 @@ body {
   background: var(--bg3);
   border: 1px solid var(--border);
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .token-ca {
@@ -1553,7 +1553,7 @@ body {
   display: flex;
   align-items: center;
   padding: 5px;
-  border-radius: 5px;
+  border-radius: 0;
   transition: color 0.15s, background 0.15s;
 }
 
@@ -1577,7 +1577,7 @@ body {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
   min-width: 340px;
 }
@@ -1613,7 +1613,7 @@ body {
   font-size: 13px;
   font-weight: 700;
   padding: 9px 28px;
-  border-radius: 7px;
+  border-radius: 0;
   border: none;
   cursor: pointer;
   text-decoration: none;
@@ -1635,7 +1635,7 @@ body {
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
   margin: 20px 0;
 }
@@ -1672,7 +1672,7 @@ body {
   font-size: 11px;
   font-weight: 600;
   padding: 2px 7px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .token-stat-box-badge.up {
@@ -1702,7 +1702,7 @@ body {
   color: var(--text3);
   background: var(--bg3);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 4px 12px;
 }
 
@@ -1714,7 +1714,7 @@ body {
 /* Orb-style box tabs (TRADES | HOLDERS | WHALES) */
 .orb-data-tabs {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
   margin-top: 0;
 }
@@ -1789,7 +1789,7 @@ body {
   font-weight: 600;
   color: var(--green);
   border: 1px solid var(--green);
-  border-radius: 5px;
+  border-radius: 0;
   padding: 3px 10px;
   letter-spacing: 0.3px;
 }
@@ -1879,7 +1879,7 @@ body {
   font-size: 14px;
   font-weight: 600;
   padding: 14px 80px;
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
   letter-spacing: 0.3px;
@@ -1908,7 +1908,7 @@ body {
   padding: 20px;
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -1925,7 +1925,7 @@ body {
   height: 38px;
   background: var(--green-subtle);
   border: 1px solid rgba(0, 209, 94, 0.25);
-  border-radius: 9px;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1954,7 +1954,7 @@ body {
   padding: 10px 16px;
   background: var(--bg3);
   border: 1px solid var(--border2);
-  border-radius: 8px;
+  border-radius: 0;
   color: var(--text);
   font-size: 13px;
   font-weight: 600;
@@ -1976,7 +1976,7 @@ body {
   padding: 10px 12px;
   background: rgba(224, 92, 92, 0.05);
   border: 1px solid rgba(224, 92, 92, 0.15);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .wallet-address-wrap {
@@ -1996,7 +1996,7 @@ body {
   gap: 0;
   margin-bottom: 24px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -2054,7 +2054,7 @@ body {
   font-size: 13px;
   font-weight: 600;
   padding: 6px 14px;
-  border-radius: 20px;
+  border-radius: 0;
   cursor: pointer;
   transition: background 0.2s ease;
 }
@@ -2075,7 +2075,7 @@ body {
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 @keyframes shimmer {
@@ -2084,22 +2084,274 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   PAGE ENTER ANIMATION
+   ANIMATIONS & TRANSITIONS
 ═══════════════════════════════════════════════════════════════════ */
-.page-enter {
-  animation: fadeIn 0.3s ease forwards;
+
+/* ── Core keyframes ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fadeInFast {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
+@keyframes greenPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 209, 94, 0); }
+  50%       { box-shadow: 0 0 0 4px rgba(0, 209, 94, 0.18); }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: var(--border2); }
+  50%       { border-color: rgba(0, 209, 94, 0.5); }
+}
+
+@keyframes numberPop {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.96); }
+  60%  { transform: translateY(-2px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes sweepRight {
+  from { width: 0; }
+  to   { width: 3px; }
+}
+
+/* ── Utility classes ── */
 .spin { animation: spin 0.7s linear infinite; }
+
+/* ── Page enter ── */
+.page-enter {
+  animation: fadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Stat boxes: lift + border glow on hover ── */
+.token-stat-box {
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.token-stat-box:hover {
+  transform: translateY(-2px);
+  border-color: var(--border2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Balance boxes: same lift ── */
+.balance-box {
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+.balance-box:hover {
+  transform: translateY(-1px);
+  border-color: var(--green);
+}
+
+/* ── Token stat value pop on mount ── */
+.token-stat-box-value {
+  animation: numberPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Table rows: left accent sweep on hover ── */
+.token-table tbody tr,
+.data-table tbody tr {
+  position: relative;
+  transition: background 0.12s ease;
+}
+
+.token-table tbody tr::before,
+.data-table tbody tr::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 0;
+  background: var(--green);
+  transition: width 0.15s ease;
+  pointer-events: none;
+}
+
+.token-table tbody tr:hover::before,
+.data-table tbody tr:hover::before {
+  width: 2px;
+}
+
+/* ── Buy button: shimmer sweep on hover ── */
+.buy-btn,
+.token-buy-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.buy-btn::after,
+.token-buy-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+
+.buy-btn:hover::after,
+.token-buy-btn:hover::after {
+  transform: translateX(100%);
+}
+
+.buy-btn:active,
+.token-buy-btn:active {
+  transform: scale(0.97);
+}
+
+/* ── Nav connect/profile button hover ── */
+.connect-btn {
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.connect-btn:hover { transform: translateY(-1px); }
+.connect-btn:active { transform: scale(0.97); }
+
+/* ── Settings dropdown: smooth appear ── */
+.settings-dropdown {
+  transform-origin: top right;
+  animation: scaleIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Search dropdown: smooth appear ── */
+.nav-search-dropdown {
+  animation: fadeInFast 0.12s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Search rows: staggered cascade ── */
+.search-row:nth-child(1) { animation: rowIn 0.14s ease both; }
+.search-row:nth-child(2) { animation: rowIn 0.14s 0.04s ease both; }
+.search-row:nth-child(3) { animation: rowIn 0.14s 0.08s ease both; }
+.search-row:nth-child(4) { animation: rowIn 0.14s 0.12s ease both; }
+.search-row:nth-child(5) { animation: rowIn 0.14s 0.16s ease both; }
+.search-row:nth-child(6) { animation: rowIn 0.14s 0.20s ease both; }
+
+/* ── Tab content: fade when switching ── */
+.orb-data-tab-content {
+  animation: fadeInFast 0.18s ease forwards;
+}
+
+/* ── Orb tabs bar: active indicator slide ── */
+.orb-data-tab {
+  position: relative;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.orb-data-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--green);
+  animation: slideInLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Orb data tab hover ── */
+.orb-data-tab:not(.active):hover {
+  background: var(--bg3);
+}
+
+/* ── New / Hot badges: entrance pop ── */
+.new-badge, .hot-badge {
+  animation: scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Token header entry ── */
+.token-header {
+  animation: fadeIn 0.25s ease forwards;
+}
+
+/* ── Chart section: subtle hover glow ── */
+.chart-section {
+  transition: border-color 0.2s ease;
+}
+.chart-section:hover {
+  border-color: var(--border2);
+}
+
+/* ── Stat card hover ── */
+.stat-card {
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.stat-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Wallet info card entry ── */
+.wallet-info-card {
+  animation: slideInLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Dashboard token table: row entrance stagger (first 10) ── */
+.token-table tbody tr { animation: rowIn 0.18s ease both; }
+.token-table tbody tr:nth-child(1)  { animation-delay: 0s; }
+.token-table tbody tr:nth-child(2)  { animation-delay: 0.03s; }
+.token-table tbody tr:nth-child(3)  { animation-delay: 0.06s; }
+.token-table tbody tr:nth-child(4)  { animation-delay: 0.09s; }
+.token-table tbody tr:nth-child(5)  { animation-delay: 0.12s; }
+.token-table tbody tr:nth-child(6)  { animation-delay: 0.15s; }
+.token-table tbody tr:nth-child(7)  { animation-delay: 0.18s; }
+.token-table tbody tr:nth-child(8)  { animation-delay: 0.21s; }
+.token-table tbody tr:nth-child(9)  { animation-delay: 0.24s; }
+.token-table tbody tr:nth-child(10) { animation-delay: 0.27s; }
+
+/* ── Copy button ── */
+.copy-btn {
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.copy-btn:hover { transform: scale(1.15); }
+
+/* ── Orb live badge blink ── */
+.orb-live-badge {
+  animation: borderGlow 2.5s ease-in-out infinite;
+}
+
+/* ── Focus rings: sharp, green ── */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+/* ── Transition smoothing for all interactive cards/boxes ── */
+.orb-data-tabs,
+.token-meta-table,
+.balances-grid {
+  transition: border-color 0.2s ease;
+}
+
+/* ── Green badge pulse (new/hot token highlight) ── */
+.token-stat-box-badge.up {
+  animation: greenPulse 3s ease-in-out infinite;
+}
 
 /* Address detect row variants */
 .search-row-addr-detect { cursor: pointer; }
@@ -2178,7 +2430,7 @@ body {
   /* Balance boxes stack */
   .balances-grid {
     grid-template-columns: 1fr;
-    border-radius: 10px;
+    border-radius: 0;
   }
 
   .balance-box {

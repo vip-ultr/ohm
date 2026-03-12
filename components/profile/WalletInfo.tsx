@@ -21,7 +21,7 @@ export default function WalletInfo({ address, onDisconnect }: WalletInfoProps) {
             height: 48,
             background: "var(--green-subtle)",
             border: "1px solid var(--green)",
-            borderRadius: 12,
+            borderRadius: 0,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
