@@ -35,12 +35,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           // Scope the wallet modal to Solana-only wallets (hides MetaMask etc.)
           walletChainType: "solana-only",
         },
-        solanaClusters: [
-          {
-            name: "mainnet-beta",
-            rpcUrl: "https://api.mainnet-beta.solana.com",
-          },
-        ],
         embeddedWallets: {
           // Create a Privy-managed Solana wallet for users who sign up without a wallet
           solana: { createOnLogin: "users-without-wallets" },

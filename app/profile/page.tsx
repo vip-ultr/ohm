@@ -7,6 +7,7 @@ import WalletInfo from "@/components/profile/WalletInfo";
 import BalanceCards from "@/components/profile/BalanceCards";
 import HoldingsTab from "@/components/profile/HoldingsTab";
 import HistoryTab from "@/components/profile/HistoryTab";
+import ExportKeySection from "@/components/profile/ExportKeySection";
 import type { ProfileTab, WalletPortfolio } from "@/types";
 import { History, Layers } from "lucide-react";
 
@@ -63,6 +64,7 @@ export default function ProfilePage() {
     <div className="page-enter">
       <WalletInfo address={address!} onDisconnect={logout} />
       <BalanceCards portfolio={portfolio} loading={isLoading} />
+      <ExportKeySection />
 
       {/* Orb-style data tabs */}
       <div className="orb-data-tabs">
