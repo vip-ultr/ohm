@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import MarketOverviewCards from "@/components/dashboard/MarketOverviewCards";
 import TokenTable from "@/components/dashboard/TokenTable";
