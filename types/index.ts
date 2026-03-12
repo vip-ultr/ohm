@@ -37,6 +37,7 @@ export interface Token {
   launchpad: "bags.fm" | string;
   description?: string;
   creator?: string;
+  isMigrated?: boolean; // true when pool has graduated to DAMM v2
 }
 
 // ─── TRADE ────────────────────────────────────────────────────────
