@@ -23,7 +23,7 @@ export default function Footer() {
           <span className="footer-logo-icon">Ω</span>
           <span className="footer-logo-text">Ohm</span>
           <Divider />
-          <span className="footer-tagline">intelligence layer</span>
+          <span className="footer-tagline">Token Analytics Model</span>
         </div>
 
         {/* Contract address */}

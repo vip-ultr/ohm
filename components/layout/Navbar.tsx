@@ -1,28 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useWallet } from "@/hooks/useWallet";
-import { SearchBar } from "@/components/ui/SearchBar";
+import { NavSearch } from "@/components/ui/NavSearch";
 import { SettingsDropdown } from "@/components/ui/SettingsDropdown";
 import { User } from "lucide-react";
 
 export default function Navbar() {
-  const router = useRouter();
   const { ready, authenticated, shortAddress, login } = useWallet();
-  const [query, setQuery] = useState("");
-
-  const handleSearch = (val: string) => {
-    const trimmed = val.trim();
-    if (!trimmed) return;
-    if (trimmed.length > 20) {
-      router.push(`/token/${trimmed}`);
-    } else {
-      router.push(`/?search=${encodeURIComponent(trimmed)}`);
-    }
-    setQuery("");
-  };
 
   return (
     <nav className="navbar">
@@ -32,14 +17,9 @@ export default function Navbar() {
         <span className="nav-logo-text">Ohm</span>
       </Link>
 
-      {/* Search */}
+      {/* Smart search */}
       <div className="nav-center">
-        <SearchBar
-          value={query}
-          onChange={setQuery}
-          onEnter={handleSearch}
-          placeholder="Search token or paste address…"
-        />
+        <NavSearch />
       </div>
 
       {/* Right controls */}

@@ -479,6 +479,7 @@ body {
 /* ═══════════════════════════════════════════════════════════════════
    SEARCH BAR
 ═══════════════════════════════════════════════════════════════════ */
+/* Old SearchBar (kept for non-navbar uses) */
 .search-bar {
   position: relative;
   width: 100%;
@@ -488,7 +489,7 @@ body {
   width: 100%;
   background: var(--bg3);
   border: 1px solid var(--border2);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 9px 16px 9px 40px;
   font-family: inherit;
   font-size: 14px;
@@ -497,9 +498,7 @@ body {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.search-input::placeholder {
-  color: var(--text3);
-}
+.search-input::placeholder { color: var(--text3); }
 
 .search-input:focus {
   border-color: var(--green);
@@ -513,6 +512,210 @@ body {
   transform: translateY(-50%);
   color: var(--text3);
   pointer-events: none;
+}
+
+/* ── NavSearch (smart navbar search) ────────────────────────────── */
+.nav-search-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.nav-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.nav-search-bar.focused {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px var(--green-glow);
+}
+
+.nav-search-icon {
+  flex-shrink: 0;
+  margin-left: 12px;
+  color: var(--text3);
+  pointer-events: none;
+}
+
+.nav-search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 9px 10px 9px 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  min-width: 0;
+}
+
+.nav-search-input::placeholder { color: var(--text3); }
+
+.nav-search-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  height: 100%;
+  transition: color 0.15s;
+}
+
+.nav-search-clear:hover { color: var(--text); }
+
+/* Dropdown panel */
+.nav-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--bg2);
+  border: 1.5px solid var(--border2);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  z-index: 300;
+  overflow: hidden;
+  animation: settings-in 0.1s ease;
+}
+
+/* Search result row */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.search-row:last-child { border-bottom: none; }
+
+.search-row:hover,
+.search-row.focused { background: var(--bg3); }
+
+.search-row-icon {
+  width: 28px;
+  height: 28px;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text3);
+}
+
+.search-row-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.search-row-logo-placeholder {
+  width: 28px;
+  height: 28px;
+  background: var(--bg5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.search-row-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.search-row-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.search-row-fullname {
+  font-weight: 400;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+.search-row-addr {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.search-row-sub {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: "JetBrains Mono", monospace;
+}
+
+.search-row-price {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--text2);
+  flex-shrink: 0;
+}
+
+.search-row-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.search-row-badge.token {
+  background: rgba(0, 209, 94, 0.12);
+  color: var(--green);
+  border: 1px solid rgba(0, 209, 94, 0.25);
+}
+
+.search-row-badge.wallet {
+  background: rgba(88, 130, 255, 0.12);
+  color: #6b9aff;
+  border: 1px solid rgba(88, 130, 255, 0.25);
+}
+
+.search-row-arrow {
+  color: var(--text4);
+  flex-shrink: 0;
+}
+
+.search-row-loading {
+  padding: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text3);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -903,7 +1106,8 @@ body {
 ═══════════════════════════════════════════════════════════════════ */
 .token-table-wrap {
   overflow-x: auto;
-  border-top: 1px solid var(--border);
+  border: 1.5px solid var(--border2);
+  border-radius: 0;
 }
 
 .token-table {
@@ -921,30 +1125,32 @@ body {
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1.5px solid var(--border2);
+  border-right: 1.5px solid var(--border);
   white-space: nowrap;
 }
 
+.token-table thead th:last-child { border-right: none; }
+
 .token-table tbody tr {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1.5px solid var(--border);
   cursor: pointer;
   transition: background 0.12s ease;
 }
 
-.token-table tbody tr:last-child {
-  border-bottom: none;
-}
+.token-table tbody tr:last-child { border-bottom: none; }
 
-.token-table tbody tr:hover {
-  background: var(--bg2);
-}
+.token-table tbody tr:hover { background: var(--bg2); }
 
 .token-table td {
   padding: 13px 14px;
   font-size: 14px;
   color: var(--text);
   white-space: nowrap;
+  border-right: 1.5px solid var(--border);
 }
+
+.token-table td:last-child { border-right: none; }
 
 .table-empty {
   text-align: center;
@@ -1054,6 +1260,8 @@ body {
 ═══════════════════════════════════════════════════════════════════ */
 .data-table-wrap {
   overflow-x: auto;
+  border: 1.5px solid var(--border2);
+  border-radius: 0;
 }
 
 .data-table {
@@ -1070,28 +1278,30 @@ body {
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1.5px solid var(--border2);
+  border-right: 1.5px solid var(--border);
   white-space: nowrap;
 }
 
+.data-table thead th:last-child { border-right: none; }
+
 .data-table tbody tr {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1.5px solid var(--border);
   transition: background 0.15s ease;
 }
 
-.data-table tbody tr:last-child {
-  border-bottom: none;
-}
+.data-table tbody tr:last-child { border-bottom: none; }
 
-.data-table tbody tr:hover {
-  background: var(--bg3);
-}
+.data-table tbody tr:hover { background: var(--bg3); }
 
 .data-table td {
   padding: 12px 14px;
   font-size: 13px;
   color: var(--text);
+  border-right: 1.5px solid var(--border);
 }
+
+.data-table td:last-child { border-right: none; }
 
 /* ═══════════════════════════════════════════════════════════════════
    TABS (token detail page inner tabs — trades, holders, etc.)
