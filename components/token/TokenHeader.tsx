@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ExternalLink, Globe } from "lucide-react";
-import { FaXTwitter, FaDiscord, FaTelegram } from "react-icons/fa6";
+import { FaXTwitter, FaTelegram } from "react-icons/fa6";
 import { useTokenAnalytics, useXMentions } from "@/hooks/useTokenData";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { TokenAvatar } from "@/components/ui/TokenAvatar";

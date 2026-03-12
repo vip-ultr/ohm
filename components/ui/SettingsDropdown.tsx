@@ -12,7 +12,7 @@ export function SettingsDropdown() {
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const { isDark, theme, setTheme } = useAppTheme();
+  const { isDark, setTheme } = useAppTheme();
   const { authenticated, address, logout } = useWallet();
   const { user } = usePrivy();
   const { exportWallet } = useExportWallet();
