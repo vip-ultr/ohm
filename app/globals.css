@@ -166,10 +166,10 @@ body {
 .footer {
   border-top: 1px solid var(--border);
   background: var(--bg2);
-  height: 44px;
+  height: 56px;
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 32px;
 }
 
 .footer-bar {
@@ -178,7 +178,8 @@ body {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  gap: 18px;
   white-space: nowrap;
 }
 
@@ -186,102 +187,102 @@ body {
 .footer-brand {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .footer-logo-icon {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--green);
   line-height: 1;
 }
 
 .footer-logo-text {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
 }
 
 .footer-tagline {
-  font-size: 11px;
-  color: var(--text3);
+  font-size: 12px;
+  color: var(--text2);
 }
 
 /* Contract address */
 .footer-ca {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 3px 10px;
+  padding: 5px 12px;
   flex-shrink: 0;
 }
 
 .footer-ca-addr {
   font-family: "Share Tech Mono", monospace;
-  font-size: 11px;
-  color: var(--text2);
-  letter-spacing: 0.04em;
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: 0.05em;
 }
 
 /* Divider */
 .footer-divider {
-  color: var(--border);
-  font-size: 14px;
+  color: var(--text3);
+  font-size: 16px;
   user-select: none;
   flex-shrink: 0;
+  opacity: 0.5;
 }
 
 /* Social icons */
 .footer-socials {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   flex-shrink: 0;
 }
 
 .footer-icon-link {
-  color: var(--text3);
+  color: var(--text2);
   display: flex;
   align-items: center;
   transition: color 0.15s ease;
 }
 
 .footer-icon-link:hover {
-  color: var(--text);
+  color: var(--green);
 }
 
 /* Text links */
 .footer-text-link {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  color: var(--text3);
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text2);
   transition: color 0.15s ease;
   flex-shrink: 0;
 }
 
 .footer-text-link:hover {
-  color: var(--text);
+  color: var(--green);
 }
 
 /* Powered by */
 .footer-powered {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-left: auto;
+  gap: 6px;
   flex-shrink: 0;
 }
 
 .footer-powered-label {
-  font-size: 11px;
-  color: var(--text3);
+  font-size: 12px;
+  color: var(--text2);
 }
 
 .footer-sol-icon {
@@ -289,15 +290,9 @@ body {
 }
 
 .footer-sol-text {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--text2);
-}
-
-/* keep this placeholder so the block isn't empty */
-.__footer-old-powered-sol span {
-  font-size: 12px;
-  letter-spacing: 2px;
+  color: var(--text);
 }
 
 /* ═══════════════════════════════════════════════════════════════════

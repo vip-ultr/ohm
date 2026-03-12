@@ -37,13 +37,13 @@ export default function Footer() {
         {/* Social icons */}
         <div className="footer-socials">
           <Link href="https://github.com/vip-ultr/ohm" target="_blank" rel="noopener noreferrer" className="footer-icon-link" aria-label="GitHub">
-            <FaGithub size={16} />
+            <FaGithub size={18} />
           </Link>
           <Link href="https://twitter.com/ohm_markets" target="_blank" rel="noopener noreferrer" className="footer-icon-link" aria-label="X / Twitter">
-            <FaXTwitter size={15} />
+            <FaXTwitter size={17} />
           </Link>
           <Link href="https://discord.gg/ohm" target="_blank" rel="noopener noreferrer" className="footer-icon-link" aria-label="Discord">
-            <FaDiscord size={16} />
+            <FaDiscord size={18} />
           </Link>
         </div>
 
@@ -51,14 +51,14 @@ export default function Footer() {
 
         {/* Utility links */}
         <Link href="/docs" className="footer-text-link">
-          <Code2 size={13} />
+          <Code2 size={15} />
           developers
         </Link>
 
         <Divider />
 
         <Link href="https://github.com/vip-ultr/ohm/issues/new" target="_blank" rel="noopener noreferrer" className="footer-text-link">
-          <AlertCircle size={13} />
+          <AlertCircle size={15} />
           report bug
         </Link>
 
@@ -67,7 +67,7 @@ export default function Footer() {
         {/* Powered by Solana */}
         <div className="footer-powered">
           <span className="footer-powered-label">powered by</span>
-          <SiSolana size={14} className="footer-sol-icon" />
+          <SiSolana size={16} className="footer-sol-icon" />
           <span className="footer-sol-text">solana</span>
         </div>
 
