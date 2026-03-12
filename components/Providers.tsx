@@ -23,22 +23,18 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <PrivyProvider
       appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID ?? "placeholder"}
       config={{
-        loginMethods: ["wallet", "email"],
+        // wallet = external wallets, email/google/twitter = social + email login
+        loginMethods: ["wallet", "email", "google", "twitter"],
         appearance: {
           theme: "dark",
           accentColor: "#03A338",
           logo: "/logo.svg",
-          // Privy checks window.phantom, window.solflare, etc. at runtime
-          // and shows a "Detected" badge next to any installed wallet
-          walletList: [
-            "phantom",
-            "solflare",
-            "backpack",
-            "okx_wallet",
-            "coinbase_wallet",
-          ],
+          // Valid WalletListEntry values for Solana: phantom, okx_wallet, coinbase_wallet
+          // Privy detects which are installed and shows a "Detected" badge at runtime
+          walletList: ["phantom", "okx_wallet", "coinbase_wallet"],
+          // Scope the wallet modal to Solana-only wallets (hides MetaMask etc.)
+          walletChainType: "solana-only",
         },
-        // Tell Privy we're on Solana mainnet so wallet detection is scoped correctly
         solanaClusters: [
           {
             name: "mainnet-beta",
@@ -46,7 +42,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           },
         ],
         embeddedWallets: {
-          // Create a Privy-managed Solana wallet for users who have no wallet
+          // Create a Privy-managed Solana wallet for users who sign up without a wallet
           solana: { createOnLogin: "users-without-wallets" },
         },
       }}
