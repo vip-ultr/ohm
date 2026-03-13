@@ -7,6 +7,23 @@ interface HistoryTabProps {
   data?: HistoryRow[];
 }
 
+function shortTime(timestamp: number): string {
+  const d = new Date(timestamp * 1000);
+  const now = new Date();
+  const isSameDay =
+    d.getDate() === now.getDate() &&
+    d.getMonth() === now.getMonth() &&
+    d.getFullYear() === now.getFullYear();
+  if (isSameDay) {
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+  return (
+    d.toLocaleDateString([], { month: "short", day: "numeric" }) +
+    " " +
+    d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  );
+}
+
 export default function HistoryTab({ data = [] }: HistoryTabProps) {
   if (data.length === 0) {
     return (
@@ -18,28 +35,21 @@ export default function HistoryTab({ data = [] }: HistoryTabProps) {
 
   return (
     <div className="data-table-wrap">
-      <table className="data-table" style={{ tableLayout: "fixed" }}>
-        <colgroup>
-          <col style={{ width: "170px" }} />
-          <col style={{ width: "80px" }} />
-          <col style={{ width: "160px" }} />
-          <col style={{ width: "120px" }} />
-          <col />
-        </colgroup>
+      <table className="data-table">
         <thead>
           <tr>
-            <th>Time</th>
-            <th>Type</th>
-            <th>Token</th>
-            <th>Amount</th>
-            <th>Price</th>
+            <th style={{ whiteSpace: "nowrap", minWidth: 160 }}>Time</th>
+            <th style={{ minWidth: 80 }}>Type</th>
+            <th style={{ minWidth: 120 }}>Token</th>
+            <th style={{ textAlign: "right", minWidth: 110 }}>Amount</th>
+            <th style={{ textAlign: "right", minWidth: 110 }}>Value</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row) => (
             <tr key={row.id}>
               <td style={{ color: "var(--text3)", fontSize: 11, fontFamily: "monospace", whiteSpace: "nowrap" }}>
-                {row.time}
+                {shortTime(row.timestamp)}
               </td>
               <td>
                 {row.type === "buy" ? (
@@ -54,11 +64,20 @@ export default function HistoryTab({ data = [] }: HistoryTabProps) {
                   </span>
                 )}
               </td>
-              <td style={{ fontFamily: "monospace", fontSize: 12, color: "var(--text2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <td style={{ fontFamily: "monospace", fontSize: 12, color: "var(--text2)" }}>
                 {row.ticker || row.token}
               </td>
-              <td style={{ fontFamily: "monospace", fontSize: 13 }}>{row.amount}</td>
-              <td style={{ fontFamily: "monospace", fontSize: 13, color: "var(--green)" }}>{row.price}</td>
+              <td style={{ fontFamily: "monospace", fontSize: 13, textAlign: "right" }}>
+                {row.amount}
+              </td>
+              <td style={{
+                fontFamily: "monospace",
+                fontSize: 13,
+                textAlign: "right",
+                color: row.type === "buy" ? "var(--green)" : "var(--red)",
+              }}>
+                {row.price}
+              </td>
             </tr>
           ))}
         </tbody>

@@ -82,7 +82,7 @@ export default function ProfilePage() {
             </button>
           ))}
         </div>
-        <div className="orb-data-tab-content" style={{ padding: 20 }}>
+        <div className="orb-data-tab-content">
           {tab === "holdings" ? (
             <HoldingsTab data={portfolio?.holdings} />
           ) : (

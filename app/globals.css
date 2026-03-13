@@ -1265,10 +1265,21 @@ body {
   border-radius: 0;
 }
 
+/* When a table lives inside orb-tabs (profile/wallet), the outer
+   orb-data-tabs border already frames it — drop the inner border to
+   prevent clipping by overflow:hidden and double-border artifacts. */
+.orb-data-tab-content > .data-table-wrap {
+  border: none;
+}
+
 .data-table {
   width: 100%;
   min-width: 560px;
   border-collapse: collapse;
+}
+
+.data-table thead {
+  background: var(--bg2);
 }
 
 .data-table thead th {
@@ -1725,7 +1736,10 @@ body {
   border-bottom: 1px solid var(--border);
   background: var(--bg2);
   overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
 }
+.orb-data-tabs-bar::-webkit-scrollbar { display: none; }
 
 .orb-data-tab {
   display: flex;
