@@ -126,7 +126,7 @@ export interface HistoryRow {
   amountRaw: number;
   price: string;
   priceRaw: number;
-  type: "buy" | "sell";
+  type: "buy" | "sell" | "send" | "receive" | "mint" | "burn";
 }
 
 // ─── MARKET OVERVIEW ──────────────────────────────────────────────
