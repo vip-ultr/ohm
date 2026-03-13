@@ -8,6 +8,7 @@ import {
 import type { WalletPortfolio } from "@/types";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(
   _req: NextRequest,
@@ -27,7 +28,7 @@ export async function GET(
 
     const solUsdPrice = 148; // TODO: fetch live SOL price
     const solUsdValue = balances.solBalance * solUsdPrice;
-    const tokenUsdValue = balances.tokens.reduce((sum, t) => sum + t.balance * 0, 0); // placeholder
+    const tokenUsdValue = balances.tokens.reduce((sum, t) => sum + t.valueUsd, 0);
     const totalUsd = solUsdValue + tokenUsdValue;
 
     const portfolio: WalletPortfolio = {
@@ -38,16 +39,16 @@ export async function GET(
       totalUsdRaw: totalUsd,
       tokenCount: balances.tokens.length,
       holdings: balances.tokens.map((t) => ({
-        token: t.mint.slice(0, 8) + "…",
-        ticker: "TOKEN",
+        token: t.name,
+        ticker: t.symbol,
         mint: t.mint,
         balance: fmtAmount(t.balance),
         balanceRaw: t.balance,
-        value: "$–",
-        valueRaw: 0,
-        price: fmtPrice(0),
-        priceRaw: 0,
-        logoUrl: null,
+        value: t.valueUsd > 0 ? `$${fmtAmount(t.valueUsd)}` : "$–",
+        valueRaw: t.valueUsd,
+        price: fmtPrice(t.priceUsd),
+        priceRaw: t.priceUsd,
+        logoUrl: t.logoUrl,
       })),
       history,
     };

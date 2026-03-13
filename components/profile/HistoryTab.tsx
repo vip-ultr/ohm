@@ -18,7 +18,14 @@ export default function HistoryTab({ data = [] }: HistoryTabProps) {
 
   return (
     <div className="data-table-wrap">
-      <table className="data-table">
+      <table className="data-table" style={{ tableLayout: "fixed" }}>
+        <colgroup>
+          <col style={{ width: "170px" }} />
+          <col style={{ width: "80px" }} />
+          <col style={{ width: "160px" }} />
+          <col style={{ width: "120px" }} />
+          <col />
+        </colgroup>
         <thead>
           <tr>
             <th>Time</th>
@@ -31,7 +38,7 @@ export default function HistoryTab({ data = [] }: HistoryTabProps) {
         <tbody>
           {data.map((row) => (
             <tr key={row.id}>
-              <td style={{ color: "var(--text3)", fontSize: 12, fontFamily: "monospace" }}>
+              <td style={{ color: "var(--text3)", fontSize: 11, fontFamily: "monospace", whiteSpace: "nowrap" }}>
                 {row.time}
               </td>
               <td>
@@ -47,11 +54,11 @@ export default function HistoryTab({ data = [] }: HistoryTabProps) {
                   </span>
                 )}
               </td>
-              <td style={{ fontFamily: "monospace", fontSize: 12, color: "var(--text2)" }}>
+              <td style={{ fontFamily: "monospace", fontSize: 12, color: "var(--text2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {row.ticker || row.token}
               </td>
-              <td style={{ fontFamily: "monospace" }}>{row.amount}</td>
-              <td style={{ fontFamily: "monospace" }}>{row.price}</td>
+              <td style={{ fontFamily: "monospace", fontSize: 13 }}>{row.amount}</td>
+              <td style={{ fontFamily: "monospace", fontSize: 13, color: "var(--green)" }}>{row.price}</td>
             </tr>
           ))}
         </tbody>

@@ -10,7 +10,7 @@ const HELIUS_API_KEY = process.env.HELIUS_API_KEY!;
 const HELIUS_BASE_URL =
   process.env.HELIUS_BASE_URL ?? "https://api.helius.xyz/v0";
 const HELIUS_RPC_URL =
-  process.env.HELIUS_RPC_URL ?? "https://mainnet.helius-rpc.com";
+  process.env.HELIUS_RPC_URL ?? "https://beta.helius-rpc.com";
 
 // ─── Utility helpers ──────────────────────────────────────────────
 export function timeAgo(timestamp: number): string {
@@ -249,84 +249,217 @@ export async function fetchTokenOHLCV(
 }
 
 // ─── Wallet balances ──────────────────────────────────────────────
+export interface WalletToken {
+  mint: string;
+  name: string;
+  symbol: string;
+  balance: number;
+  decimals: number;
+  logoUrl: string | null;
+  priceUsd: number;
+  valueUsd: number;
+}
+
 export async function fetchWalletBalances(address: string): Promise<{
   solBalance: number;
-  tokens: Array<{ mint: string; balance: number; decimals: number }>;
+  tokens: WalletToken[];
 }> {
-  const [solResult, tokenResult] = await Promise.allSettled([
+  type DasAsset = {
+    id: string;
+    content?: {
+      metadata?: { name?: string; symbol?: string };
+      links?: { image?: string };
+    };
+    token_info?: {
+      balance?: number;
+      decimals?: number;
+      price_info?: { price_per_token?: number; total_price?: number };
+    };
+    interface?: string;
+  };
+
+  type DasResult = { items?: DasAsset[]; total?: number };
+
+  const [solResult, dasResult] = await Promise.allSettled([
     rpc("getBalance", [address]) as Promise<{ value: number }>,
-    rpc("getTokenAccountsByOwner", [
-      address,
-      { programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" },
-      { encoding: "jsonParsed" },
-    ]) as Promise<{ value: Array<{ account: { data: { parsed: { info: { mint: string; tokenAmount: { uiAmount: number; decimals: number } } } } } }> }>,
+    dasPost("getAssetsByOwner", {
+      ownerAddress: address,
+      page: 1,
+      limit: 100,
+      displayOptions: { showFungible: true, showNativeBalance: false },
+    }) as Promise<DasResult>,
   ]);
 
   const solBalance =
-    solResult.status === "fulfilled" ? (solResult.value as { value: number }).value / 1e9 : 0;
+    solResult.status === "fulfilled"
+      ? (solResult.value as { value: number }).value / 1e9
+      : 0;
 
-  type TokenAccountResult = {
-    value: Array<{
-      account: {
-        data: {
-          parsed: {
-            info: {
-              mint: string;
-              tokenAmount: { uiAmount: number; decimals: number };
+  const tokens: WalletToken[] =
+    dasResult.status === "fulfilled"
+      ? (dasResult.value.items ?? [])
+          .filter(
+            (a) =>
+              a.interface === "FungibleToken" ||
+              a.interface === "FungibleAsset"
+          )
+          .map((a) => {
+            const rawBalance = a.token_info?.balance ?? 0;
+            const decimals = a.token_info?.decimals ?? 0;
+            const balance = rawBalance / Math.pow(10, decimals);
+            return {
+              mint: a.id,
+              name: a.content?.metadata?.name ?? a.id.slice(0, 8) + "…",
+              symbol: a.content?.metadata?.symbol ?? "???",
+              balance,
+              decimals,
+              logoUrl: a.content?.links?.image ?? null,
+              priceUsd: a.token_info?.price_info?.price_per_token ?? 0,
+              valueUsd: a.token_info?.price_info?.total_price ?? 0,
             };
-          };
-        };
-      };
-    }>;
-  };
-
-  const tokens =
-    tokenResult.status === "fulfilled"
-      ? (tokenResult.value as TokenAccountResult).value
-          .map((acc) => ({
-            mint: acc.account.data.parsed.info.mint,
-            balance: acc.account.data.parsed.info.tokenAmount.uiAmount,
-            decimals: acc.account.data.parsed.info.tokenAmount.decimals,
-          }))
+          })
           .filter((t) => t.balance > 0)
       : [];
 
   return { solBalance, tokens };
 }
 
-// ─── Wallet transaction history ───────────────────────────────────
+// ─── Wallet transaction history (RPC-only — avoids api.helius.xyz) ───────────
+type ParsedTx = {
+  blockTime: number;
+  meta?: {
+    err: unknown;
+    preBalances?: number[];
+    postBalances?: number[];
+    preTokenBalances?: Array<{
+      accountIndex: number;
+      mint: string;
+      owner?: string;
+      uiTokenAmount: { uiAmount: number | null };
+    }>;
+    postTokenBalances?: Array<{
+      accountIndex: number;
+      mint: string;
+      owner?: string;
+      uiTokenAmount: { uiAmount: number | null };
+    }>;
+  };
+  transaction: {
+    signatures: string[];
+    message: {
+      accountKeys: Array<{ pubkey: string }>;
+    };
+  };
+};
+
 export async function fetchWalletTransactions(
   address: string,
   limit = 30
 ): Promise<HistoryRow[]> {
-  const url = `${HELIUS_BASE_URL}/addresses/${address}/transactions?api-key=${HELIUS_API_KEY}&limit=${limit}&type=SWAP`;
-  const res = await fetch(url, { next: { revalidate: 30 } });
-  if (!res.ok) return [];
+  // Step 1: get recent signatures via RPC
+  const sigs = (await rpc("getSignaturesForAddress", [
+    address,
+    { limit, commitment: "finalized" },
+  ])) as Array<{ signature: string; blockTime: number | null; err: unknown }>;
 
-  const txs = (await res.json()) as Array<{
-    signature: string;
-    timestamp: number;
-    tokenTransfers?: Array<{ mint: string; tokenAmount: number; toUserAccount?: string }>;
-    nativeTransfers?: Array<{ amount: number }>;
+  if (!sigs?.length) return [];
+
+  const validSigs = sigs.filter((s) => !s.err && s.blockTime != null).slice(0, limit);
+  if (!validSigs.length) return [];
+
+  // Step 2: batch-fetch all parsed transactions in a single HTTP call
+  const batchBody = validSigs.map((s, i) => ({
+    jsonrpc: "2.0" as const,
+    id: i,
+    method: "getTransaction",
+    params: [s.signature, { encoding: "jsonParsed", maxSupportedTransactionVersion: 0 }],
+  }));
+
+  const batchRes = await fetch(`${HELIUS_RPC_URL}/?api-key=${HELIUS_API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(batchBody),
+    next: { revalidate: 30 },
+  });
+
+  if (!batchRes.ok) {
+    console.error(`fetchWalletTransactions batch RPC error: ${batchRes.status}`);
+    return [];
+  }
+
+  const batchResults = (await batchRes.json()) as Array<{
+    id: number;
+    result: ParsedTx | null;
+    error?: { message: string };
   }>;
 
-  return txs.slice(0, limit).map((tx) => {
-    const transfer = tx.tokenTransfers?.[0];
-    const solValue = (tx.nativeTransfers?.[0]?.amount ?? 0) / 1e9;
-    const isBuy = !!transfer?.toUserAccount;
+  // Step 3: collect all mints for one batch metadata lookup
+  const mintSet = new Set<string>();
+  for (const { result: tx } of batchResults) {
+    if (!tx || tx.meta?.err) continue;
+    for (const b of tx.meta?.preTokenBalances ?? []) mintSet.add(b.mint);
+    for (const b of tx.meta?.postTokenBalances ?? []) mintSet.add(b.mint);
+  }
 
-    return {
-      id: tx.signature,
-      time: new Date(tx.timestamp * 1000).toLocaleString(),
-      timestamp: tx.timestamp,
-      token: transfer?.mint ? shortenAddr(transfer.mint) : "SOL",
-      ticker: "TOKEN",
-      mint: transfer?.mint ?? "",
-      amount: fmtAmount(transfer?.tokenAmount ?? 0),
-      amountRaw: transfer?.tokenAmount ?? 0,
-      price: fmtPrice(solValue),
-      priceRaw: solValue,
-      type: isBuy ? "buy" : "sell",
-    };
-  });
+  const mints = Array.from(mintSet);
+  const metaMap: Record<string, TokenMetadata> =
+    mints.length > 0 ? await fetchTokenMetadata(mints).catch(() => ({})) : {};
+
+  // Step 4: build HistoryRow entries from per-wallet token balance deltas
+  const rows: HistoryRow[] = [];
+  const seen = new Set<string>();
+
+  for (const { result: tx } of batchResults) {
+    if (!tx || tx.meta?.err) continue;
+
+    const sig = tx.transaction.signatures[0];
+    const blockTime = tx.blockTime;
+    const accountKeys = tx.transaction.message.accountKeys.map((k) => k.pubkey);
+    const walletIdx = accountKeys.indexOf(address);
+
+    const pre = tx.meta?.preTokenBalances ?? [];
+    const post = tx.meta?.postTokenBalances ?? [];
+
+    const postByMint = new Map(
+      post.filter((b) => b.owner === address).map((b) => [b.mint, b])
+    );
+    const preByMint = new Map(
+      pre.filter((b) => b.owner === address).map((b) => [b.mint, b])
+    );
+
+    const touchedMints = Array.from(new Set([...Array.from(postByMint.keys()), ...Array.from(preByMint.keys())]));
+
+    for (const mint of touchedMints) {
+      const key = `${sig}:${mint}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      const preAmt = preByMint.get(mint)?.uiTokenAmount.uiAmount ?? 0;
+      const postAmt = postByMint.get(mint)?.uiTokenAmount.uiAmount ?? 0;
+      const delta = postAmt - preAmt;
+      if (Math.abs(delta) < 0.000001) continue;
+
+      const preSOL = walletIdx >= 0 ? (tx.meta?.preBalances?.[walletIdx] ?? 0) : 0;
+      const postSOL = walletIdx >= 0 ? (tx.meta?.postBalances?.[walletIdx] ?? 0) : 0;
+      const solDelta = Math.abs(postSOL - preSOL) / 1e9;
+
+      const meta = metaMap[mint];
+
+      rows.push({
+        id: `${sig}:${mint}`,
+        time: new Date(blockTime * 1000).toLocaleString(),
+        timestamp: blockTime,
+        token: meta?.name ?? shortenAddr(mint),
+        ticker: meta?.symbol ?? shortenAddr(mint, 4),
+        mint,
+        amount: fmtAmount(Math.abs(delta)),
+        amountRaw: Math.abs(delta),
+        price: fmtPrice(solDelta),
+        priceRaw: solDelta,
+        type: delta > 0 ? "buy" : "sell",
+      });
+    }
+  }
+
+  return rows.slice(0, limit);
 }

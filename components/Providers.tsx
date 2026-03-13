@@ -1,22 +1,18 @@
 "use client";
 
-import { PrivyProvider } from "@privy-io/react-auth";
+import { useMemo } from "react";
+import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
+import { CoinbaseWalletAdapter } from "@solana/wallet-adapter-coinbase";
+import { TorusWalletAdapter } from "@solana/wallet-adapter-torus";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
 
-const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
-
-const THEME_WRAPPER = ({ children }: { children: React.ReactNode }) => (
-  <ThemeProvider
-    attribute="class"
-    defaultTheme="dark"
-    enableSystem={false}
-    disableTransitionOnChange={false}
-  >
-    {children}
-  </ThemeProvider>
-);
+const RPC_ENDPOINT =
+  process.env.NEXT_PUBLIC_HELIUS_RPC_URL ??
+  "https://api.mainnet-beta.solana.com";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -32,35 +28,30 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       })
   );
 
-  const inner = (
-    <QueryClientProvider client={queryClient}>
-      <THEME_WRAPPER>{children}</THEME_WRAPPER>
-    </QueryClientProvider>
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new CoinbaseWalletAdapter(),
+      new TorusWalletAdapter(),
+    ],
+    []
   );
 
-  // Privy validates the app ID synchronously during SSR and throws if it is
-  // missing or malformed. Skip PrivyProvider entirely when the env var is not
-  // set so the build always succeeds. Auth features require the var at runtime.
-  if (!PRIVY_APP_ID) return inner;
-
   return (
-    <PrivyProvider
-      appId={PRIVY_APP_ID}
-      config={{
-        loginMethods: ["wallet", "email", "google", "twitter"],
-        appearance: {
-          theme: "dark",
-          accentColor: "#03A338",
-          logo: "/logo.svg",
-          walletList: ["phantom", "okx_wallet", "coinbase_wallet"],
-          walletChainType: "solana-only",
-        },
-        embeddedWallets: {
-          solana: { createOnLogin: "users-without-wallets" },
-        },
-      }}
-    >
-      {inner}
-    </PrivyProvider>
+    <ConnectionProvider endpoint={RPC_ENDPOINT}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            disableTransitionOnChange={false}
+          >
+            {children}
+          </ThemeProvider>
+        </QueryClientProvider>
+      </WalletProvider>
+    </ConnectionProvider>
   );
 }

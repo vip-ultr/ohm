@@ -4,6 +4,7 @@ import { fetchTokenMetadata } from "@/lib/helius";
 import type { Token } from "@/types";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(
   _req: NextRequest,

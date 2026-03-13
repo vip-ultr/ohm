@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Settings, Sun, Moon, Check, LogOut, Key, Copy } from "lucide-react";
+import { Settings, Sun, Moon, Check, LogOut, Copy } from "lucide-react";
 import { useAppTheme } from "@/hooks/useTheme";
 import { useWallet } from "@/hooks/useWallet";
-import { usePrivy } from "@privy-io/react-auth";
-import { useExportWallet } from "@privy-io/react-auth/solana";
 
 export function SettingsDropdown() {
   const [open, setOpen] = useState(false);
@@ -13,9 +11,7 @@ export function SettingsDropdown() {
   const ref = useRef<HTMLDivElement>(null);
 
   const { isDark, setTheme } = useAppTheme();
-  const { authenticated, address, logout } = useWallet();
-  const { user } = usePrivy();
-  const { exportWallet } = useExportWallet();
+  const { authenticated, address, disconnect } = useWallet();
 
   // Close on outside click
   useEffect(() => {
@@ -37,14 +33,6 @@ export function SettingsDropdown() {
     return () => document.removeEventListener("keydown", handler);
   }, []);
 
-  // Find embedded Solana wallet for export
-  const embeddedSolanaWallet = user?.linkedAccounts?.find(
-    (acct) =>
-      acct.type === "wallet" &&
-      (acct as { chainType?: string }).chainType === "solana" &&
-      (acct as { walletClientType?: string }).walletClientType === "privy"
-  ) as { address: string } | undefined;
-
   const shortAddr = address
     ? `${address.slice(0, 6)}…${address.slice(-4)}`
     : null;
@@ -56,15 +44,9 @@ export function SettingsDropdown() {
     setTimeout(() => setCopied(false), 1500);
   };
 
-  const handleExport = () => {
-    if (!embeddedSolanaWallet) return;
-    setOpen(false);
-    exportWallet({ address: embeddedSolanaWallet.address });
-  };
-
   const handleDisconnect = () => {
     setOpen(false);
-    logout();
+    disconnect();
   };
 
   return (
@@ -115,14 +97,6 @@ export function SettingsDropdown() {
                   : <Copy size={11} style={{ color: "var(--text4)", marginLeft: "auto" }} />
                 }
               </button>
-
-              {/* Export key — only for embedded wallet users */}
-              {embeddedSolanaWallet && (
-                <button className="settings-item" onClick={handleExport}>
-                  <Key size={13} />
-                  <span>Export Private Key</span>
-                </button>
-              )}
 
               {/* Disconnect */}
               <button className="settings-item settings-item-danger" onClick={handleDisconnect}>

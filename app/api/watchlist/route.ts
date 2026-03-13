@@ -3,20 +3,19 @@ import { createServerSupabaseClient } from "@/lib/supabase";
 import type { WatchlistItem } from "@/types";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-// GET /api/watchlist — get user's watchlist (user_id from header)
+// GET /api/watchlist — wallet address passed as header x-wallet-address
 export async function GET(req: NextRequest) {
-  const userId = req.headers.get("x-privy-user-id");
-  if (!userId) {
-    return NextResponse.json([], { status: 200 });
-  }
+  const walletAddress = req.headers.get("x-wallet-address");
+  if (!walletAddress) return NextResponse.json([]);
 
   try {
     const supabase = createServerSupabaseClient();
     const { data, error } = await supabase
       .from("watchlist")
       .select("token_address, created_at")
-      .eq("user_id", userId)
+      .eq("user_id", walletAddress)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -29,14 +28,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(items);
   } catch (err) {
     console.error("/api/watchlist GET error:", err);
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json([]);
   }
 }
 
-// POST /api/watchlist — add or remove token from watchlist
+// POST /api/watchlist — add or remove token
 export async function POST(req: NextRequest) {
-  const userId = req.headers.get("x-privy-user-id");
-  if (!userId) {
+  const walletAddress = req.headers.get("x-wallet-address");
+  if (!walletAddress) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -58,13 +57,13 @@ export async function POST(req: NextRequest) {
     if (action === "add") {
       const { error } = await supabase
         .from("watchlist")
-        .upsert({ user_id: userId, token_address: tokenAddress });
+        .upsert({ user_id: walletAddress, token_address: tokenAddress });
       if (error) throw error;
     } else {
       const { error } = await supabase
         .from("watchlist")
         .delete()
-        .eq("user_id", userId)
+        .eq("user_id", walletAddress)
         .eq("token_address", tokenAddress);
       if (error) throw error;
     }
