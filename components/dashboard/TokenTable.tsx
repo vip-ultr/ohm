@@ -26,8 +26,8 @@ export default function TokenTable({ initialData }: TokenTableProps) {
   const [tab, setTab] = useState<DashboardTab>("trending");
   const [timeframe, setTimeframe] = useState<Timeframe>("24H");
 
-  const { user } = useWallet();
-  const { isWatched, toggle } = useWatchlist(user?.id);
+  const { address } = useWallet();
+  const { isWatched, toggle } = useWatchlist(address);
   const { data: tokens = initialData ?? [], isLoading, refetch } = useTokenList(timeframe, tab);
 
   const changeKey =
@@ -85,7 +85,7 @@ export default function TokenTable({ initialData }: TokenTableProps) {
                 <th>Price</th>
                 <th>{timeframe} Change</th>
                 <th>Market Cap</th>
-                <th>Volume 24H</th>
+                <th>{timeframe} Volume</th>
                 <th style={{ width: 80 }}></th>
               </tr>
             </thead>

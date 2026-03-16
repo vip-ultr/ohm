@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { fetchOverviewStats } from "@/lib/bags";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {

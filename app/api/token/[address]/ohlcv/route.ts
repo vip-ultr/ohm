@@ -3,6 +3,7 @@ import { fetchTokenOHLCV } from "@/lib/helius";
 import type { ChartTimeframe } from "@/types";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,

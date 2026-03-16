@@ -1,7 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
+// NEXT_PUBLIC_ prefix required so this is available in client components
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+  process.env.SUPABASE_ANON_KEY ??
+  "";
 
 // Client-side singleton (uses anon key, respects RLS)
 let _browser: ReturnType<typeof createClient> | null = null;

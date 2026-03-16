@@ -194,7 +194,7 @@ async function fetchHeliusAssets(
   await Promise.all(
     chunks.map(async (chunk) => {
       try {
-        const res = await fetch(`${rpcUrl}?api-key=${apiKey}`, {
+        const res = await fetch(`${rpcUrl}/?api-key=${apiKey}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

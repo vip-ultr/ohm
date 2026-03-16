@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchTokenMentions } from "@/lib/twitter";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,

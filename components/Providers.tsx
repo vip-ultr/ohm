@@ -1,9 +1,17 @@
 "use client";
 
-import { PrivyProvider } from "@privy-io/react-auth";
+import { useMemo } from "react";
+import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
+
+// Use public Solana RPC for wallet connection — Helius key must stay server-only
+const RPC_ENDPOINT =
+  process.env.NEXT_PUBLIC_SOLANA_RPC_URL ??
+  "https://api.mainnet-beta.solana.com";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -19,38 +27,28 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       })
   );
 
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+    ],
+    []
+  );
+
   return (
-    <PrivyProvider
-      appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID ?? "placeholder"}
-      config={{
-        // wallet = external wallets, email/google/twitter = social + email login
-        loginMethods: ["wallet", "email", "google", "twitter"],
-        appearance: {
-          theme: "dark",
-          accentColor: "#03A338",
-          logo: "/logo.svg",
-          // Valid WalletListEntry values for Solana: phantom, okx_wallet, coinbase_wallet
-          // Privy detects which are installed and shows a "Detected" badge at runtime
-          walletList: ["phantom", "okx_wallet", "coinbase_wallet"],
-          // Scope the wallet modal to Solana-only wallets (hides MetaMask etc.)
-          walletChainType: "solana-only",
-        },
-        embeddedWallets: {
-          // Create a Privy-managed Solana wallet for users who sign up without a wallet
-          solana: { createOnLogin: "users-without-wallets" },
-        },
-      }}
-    >
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange={false}
-        >
-          {children}
-        </ThemeProvider>
-      </QueryClientProvider>
-    </PrivyProvider>
+    <ConnectionProvider endpoint={RPC_ENDPOINT}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            disableTransitionOnChange={false}
+          >
+            {children}
+          </ThemeProvider>
+        </QueryClientProvider>
+      </WalletProvider>
+    </ConnectionProvider>
   );
 }
