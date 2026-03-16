@@ -9,7 +9,9 @@ export function useWatchlist(userId: string | undefined) {
   const { data: watchlist = [], isLoading } = useQuery<WatchlistItem[]>({
     queryKey: ["watchlist", userId],
     queryFn: async () => {
-      const res = await fetch("/api/watchlist");
+      const res = await fetch("/api/watchlist", {
+        headers: { "x-wallet-address": userId ?? "" },
+      });
       if (!res.ok) return [];
       return res.json() as Promise<WatchlistItem[]>;
     },
@@ -27,7 +29,10 @@ export function useWatchlist(userId: string | undefined) {
     }) => {
       const res = await fetch("/api/watchlist", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-wallet-address": userId ?? "",
+        },
         body: JSON.stringify({ tokenAddress: address, action }),
       });
       if (!res.ok) throw new Error("Watchlist update failed");

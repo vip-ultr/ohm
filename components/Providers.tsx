@@ -4,14 +4,13 @@ import { useMemo } from "react";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
-import { CoinbaseWalletAdapter } from "@solana/wallet-adapter-coinbase";
-import { TorusWalletAdapter } from "@solana/wallet-adapter-torus";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
 
+// Use public Solana RPC for wallet connection — Helius key must stay server-only
 const RPC_ENDPOINT =
-  process.env.NEXT_PUBLIC_HELIUS_RPC_URL ??
+  process.env.NEXT_PUBLIC_SOLANA_RPC_URL ??
   "https://api.mainnet-beta.solana.com";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -32,8 +31,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
-      new CoinbaseWalletAdapter(),
-      new TorusWalletAdapter(),
     ],
     []
   );

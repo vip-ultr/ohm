@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "mcp__293c1d31-3532-4eb4-9842-3013fcdfa9d6__list_projects",
+      "Bash(find C:UsersAMMARDocumentsdev-foldohm-mrktsohm -name types* -o -name *types*)",
+      "Bash(find C:UsersAMMARDocumentsdev-foldohm-mrktsohm -type f \\\\\\(-name *.sql -o -name *migration* -o -name *schema* \\\\\\))",
+      "mcp__293c1d31-3532-4eb4-9842-3013fcdfa9d6__list_tables",
+      "mcp__293c1d31-3532-4eb4-9842-3013fcdfa9d6__apply_migration",
+      "Bash(grep -r \"Privy\\\\|privy\\\\|PRIVY\" /c/Users/AMMAR/Documents/dev-fold/ohm-mrkts/ohm --exclude-dir=node_modules --include=*.ts --include=*.tsx --include=*.json)",
+      "mcp__293c1d31-3532-4eb4-9842-3013fcdfa9d6__execute_sql"
     ]
   }
 }

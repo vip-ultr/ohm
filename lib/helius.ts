@@ -10,7 +10,7 @@ const HELIUS_API_KEY = process.env.HELIUS_API_KEY!;
 const HELIUS_BASE_URL =
   process.env.HELIUS_BASE_URL ?? "https://api.helius.xyz/v0";
 const HELIUS_RPC_URL =
-  process.env.HELIUS_RPC_URL ?? "https://beta.helius-rpc.com";
+  process.env.HELIUS_RPC_URL ?? "https://mainnet.helius-rpc.com";
 
 // ─── Utility helpers ──────────────────────────────────────────────
 export function timeAgo(timestamp: number): string {
@@ -233,17 +233,21 @@ export async function fetchTokenOHLCV(
 
   if (trades.length === 0) return [];
 
-  // Build simple close-price series from trades
+  // Calculate price per token (SOL value / token amount) for each trade
   const points: OHLCVPoint[] = trades
     .sort((a, b) => a.timestamp - b.timestamp)
-    .map((t) => ({
-      time: t.timestamp,
-      open: t.valueRaw,
-      high: t.valueRaw * 1.01,
-      low: t.valueRaw * 0.99,
-      close: t.valueRaw,
-      value: t.valueRaw,
-    }));
+    .filter((t) => t.amountRaw > 0 && t.valueRaw > 0)
+    .map((t) => {
+      const pricePerToken = t.valueRaw / t.amountRaw; // SOL per token
+      return {
+        time: t.timestamp,
+        open: pricePerToken,
+        high: pricePerToken * 1.005,
+        low: pricePerToken * 0.995,
+        close: pricePerToken,
+        value: pricePerToken,
+      };
+    });
 
   return points;
 }
